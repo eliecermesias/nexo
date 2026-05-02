@@ -1,4 +1,4 @@
-<x-layouts::auth :title="__('Two-factor authentication')">
+<x-layouts::app.sesion :title="__('Two-factor authentication')">
     <div class="flex flex-col gap-6">
         <div
             class="relative w-full h-auto"
@@ -92,4 +92,4 @@
             </form>
         </div>
     </div>
-</x-layouts::auth>
+</x-layouts::app.sesion>
