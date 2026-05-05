@@ -16,24 +16,14 @@ class MenuSeeder extends Seeder
         $menu = new Menu();
         $menus = [
             [
-                'name' => 'Dashboard',
-                'url' => route('dashboard', ['current_team' => 'default-team']),
-                'icon' => 'fas fa-home',
+                'name' => __('Dashboard'),
+                'url' => route('dashboard'),
+                'icon' => 'home',
             ],
             [
-                'name' => 'Empresas',
+                'name' => __('Enterprises'),
                 'url' => route('enterprises.index', ['current_team' => 'default-team']),
-                'icon' => 'fas fa-building',
-            ],
-            [
-                'name' => 'Usuarios',
-                'url' => '/users',
-                'icon' => 'fas fa-user-lock',
-            ],
-            [
-                'name' => 'Roles',
-                'url' => '/roles',
-                'icon' => 'far fa-id-badge',
+                'icon' => 'building-office',
             ],
         ];
         foreach ($menus as $menu) {

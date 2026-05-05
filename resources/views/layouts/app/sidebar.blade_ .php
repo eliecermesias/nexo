@@ -19,22 +19,7 @@
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
-
-            <flux:navlist variant="outline">
-                @foreach ($menu as $item)
-                    @if ($item['children']->isEmpty())
-                        <flux:navlist.item :icon="$item['icon']"  :href="$item['url']" >{{ $item['name'] }}</flux:navlist.item>
-                    @else
-                        @role('admin')
-                        <flux:navlist.group expandable :expanded="false" :heading="$item['name']" class=" lg:grid">
-                                @foreach ($item['children'] as $child)
-                                    <flux:navlist.item :icon="$child['icon']" :href="$child['url']" >{{$child['name']}}</flux:navlist.item>
-                                @endforeach
-                        </flux:navlist.group>
-                        @endrole
-                    @endif
-                @endforeach
-            </flux:navlist>
+            
 
             <flux:spacer />
 

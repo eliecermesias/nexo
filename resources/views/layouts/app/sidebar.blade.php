@@ -35,7 +35,6 @@
                     @endif
                 @endforeach
             </flux:navlist>
-
             <flux:spacer />
 
             <flux:sidebar.nav>
