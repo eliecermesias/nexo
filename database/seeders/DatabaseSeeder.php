@@ -22,11 +22,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            EnterprisesSeeder::class,
-            MenuSeeder::class,
             DocumentTypesSeeder::class,
-            PeopleSeeder::class,
-            DocumentClassesSeeder::class,
-        ]);       
+            DocumentStatusesSeeder::class,
+            CurrenciesSeeder::class,
+            TaxesSeeder::class,
+            PaymentMethodsSeeder::class,
+            BanksSeeder::class,
+            EnterprisesSeeder::class,
+            PartiesSeeder::class,
+            MenuSeeder::class,
+        ]);
     }
 }

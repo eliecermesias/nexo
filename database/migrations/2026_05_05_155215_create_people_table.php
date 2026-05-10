@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('document_type_id')->constrained('document_types')->onDelete('cascade');
+            $table->foreignId('document_type_id')->constrained('document_types', 'Id')->cascadeOnDelete();
             $table->string('document_number')->unique();
             $table->string('name');
             $table->string('lastname');

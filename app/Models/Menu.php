@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Menu extends Model
 {
@@ -12,14 +15,24 @@ class Menu extends Model
         'icon',
         'url',
         'current',
+        'priority',
     ];
 
-    public function menu()
+    /**
+     * @return Attribute<string, never>
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::get(fn (string $value): string => __($value));
+    }
+
+    public function menu(): BelongsTo
     {
         return $this->belongsTo(Menu::class, 'menu_id');
     }
-    public function children()
+
+    public function children(): HasMany
     {
-        return $this->hasMany(Menu::class, 'menu_id');
+        return $this->hasMany(Menu::class, 'menu_id')->orderBy('priority');
     }
 }

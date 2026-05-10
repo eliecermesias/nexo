@@ -2,9 +2,4 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class Enterprises extends Model
-{
-    //
-}
+class Enterprises extends Enterprise {}

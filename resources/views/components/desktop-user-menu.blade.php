@@ -1,15 +1,15 @@
 @props(['showTeam' => true])
 
 <flux:dropdown position="bottom" align="start">
-    <button type="button" class="group flex w-full items-center rounded-lg p-1 hover:bg-sky-500/10 dark:hover:bg-white/10" data-test="sidebar-menu-button">
+    <button type="button" class="group flex w-full items-center rounded-lg p-1 hover:bg-transparent hover:shadow-[0_0_18px_#00539E]" data-test="sidebar-menu-button">
         <flux:avatar :initials="auth()->user()->initials()" size="sm" />
         <div class="in-data-flux-sidebar-collapsed-desktop:hidden mx-2 grid flex-1 text-start text-sm leading-tight">
-            <span class="truncate font-medium text-gray-300 group-hover:text-white dark:text-white/80 dark:group-hover:text-white">{{ auth()->user()->name }}</span>
+            <span class="truncate font-medium text-[#FFFFFF] group-hover:text-[#FFFFFF]">{{ auth()->user()->name }}</span>
             @if($showTeam && auth()->user()->currentTeam)
-                <span class="truncate text-xs text-gray-400 dark:text-zinc-500">{{ auth()->user()->currentTeam->name }}</span>
+                <span class="truncate text-xs text-[#FFFFFF] group-hover:text-[#FFFFFF]">{{ auth()->user()->currentTeam->name }}</span>
             @endif
         </div>
-        <flux:icon name="chevrons-up-down" variant="micro" class="in-data-flux-sidebar-collapsed-desktop:hidden ms-auto size-4 text-gray-400 group-hover:text-white dark:text-white/80 dark:group-hover:text-white" />
+        <flux:icon name="chevrons-up-down" variant="micro" class="in-data-flux-sidebar-collapsed-desktop:hidden ms-auto size-4 text-[#FFFFFF] group-hover:text-[#FFFFFF]" />
     </button>
 
     <flux:menu>

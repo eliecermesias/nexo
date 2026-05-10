@@ -3,35 +3,41 @@
 namespace Database\Seeders;
 
 use App\Models\DocumentType;
-use App\Models\Enterprise;
+use App\Models\Party;
 use Illuminate\Database\Seeder;
 
-class EnterprisesSeeder extends Seeder
+class PartiesSeeder extends Seeder
 {
     public function run(): void
     {
         $nitDocumentType = DocumentType::query()->where('code', 'nit')->firstOrFail();
 
-        $enterprises = [
+        $parties = [
             [
                 'document_number' => '900.093.735-8',
+                'party_type' => 'company',
                 'legal_name' => 'CYMETRIA Group SAS',
                 'email' => 'docentes@cymetria.com',
+                'is_customer' => true,
+                'is_supplier' => false,
             ],
             [
                 'document_number' => '860.012.336-1',
+                'party_type' => 'company',
                 'legal_name' => 'INSTITUTO COLOMBIANO DE NORMAS TECNICAS Y CERTIFICACION - ICONTEC',
                 'email' => 'proveedorsuroccidente@icontec.org',
+                'is_customer' => true,
+                'is_supplier' => true,
             ],
         ];
 
-        foreach ($enterprises as $enterprise) {
-            Enterprise::query()->updateOrCreate(
+        foreach ($parties as $party) {
+            Party::query()->updateOrCreate(
                 [
                     'document_types_Id' => $nitDocumentType->getKey(),
-                    'document_number' => $enterprise['document_number'],
+                    'document_number' => $party['document_number'],
                 ],
-                $enterprise + [
+                $party + [
                     'document_types_Id' => $nitDocumentType->getKey(),
                     'country' => 'Colombia',
                 ],
