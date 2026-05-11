@@ -55,7 +55,7 @@ class MenuSeeder extends Seeder
             [
                 'name' => 'Dashboard',
                 'icon' => 'home',
-                'url' => '#',
+                'url' => route('dashboard'),
                 'current' => 'dashboard',
                 'priority' => 10,
             ],
@@ -113,7 +113,7 @@ class MenuSeeder extends Seeder
                     [
                         'name' => 'Enterprises',
                         'icon' => 'building-office',
-                        'url' => '#',
+                        'url' => route('enterprises.index'),
                         'current' => 'enterprises.*',
                         'priority' => 31,
                     ],

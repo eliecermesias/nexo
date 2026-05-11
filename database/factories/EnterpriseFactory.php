@@ -1,0 +1,47 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Country;
+use App\Models\DocumentType;
+use App\Models\Enterprise;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<Enterprise>
+ */
+class EnterpriseFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        $documentType = DocumentType::query()->firstOrCreate(
+            ['code' => 'NIT'],
+            ['name' => 'NIT', 'is_active' => true],
+        );
+
+        $country = Country::query()->firstOrCreate(
+            ['code' => 'CO'],
+            ['name' => 'Colombia', 'is_active' => true],
+        );
+
+        return [
+            'document_types_Id' => $documentType->getKey(),
+            'document_number' => fake()->unique()->numerify('9########'),
+            'legal_name' => fake()->unique()->company(),
+            'trade_name' => fake()->companySuffix().' '.fake()->word(),
+            'email' => fake()->unique()->companyEmail(),
+            'phone' => fake()->numerify('300#######'),
+            'address' => fake()->streetAddress(),
+            'city' => fake()->city(),
+            'state' => fake()->state(),
+            'country' => $country->name,
+            'countries_Id' => $country->getKey(),
+            'tax_regime' => fake()->randomElement(['Responsable de IVA', 'No responsable de IVA', 'Regimen simple']),
+        ];
+    }
+}

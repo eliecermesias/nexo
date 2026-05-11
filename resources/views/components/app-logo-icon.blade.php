@@ -1,8 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 42" {{ $attributes }}>
-    <path 
-        fill="currentColor" 
-        fill-rule="evenodd" 
-        clip-rule="evenodd"
-        d="M17.2 5.633 8.6.855 0 5.633v26.51l16.2 9 16.2-9v-8.442l7.6-4.223V9.856l-8.6-4.777-8.6 4.777V18.3l-5.6 3.111V5.633ZM38 18.301l-5.6 3.11v-6.157l5.6-3.11V18.3Zm-1.06-7.856-5.54 3.078-5.54-3.079 5.54-3.078 5.54 3.079ZM24.8 18.3v-6.157l5.6 3.111v6.158L24.8 18.3Zm-1 1.732 5.54 3.078-13.14 7.302-5.54-3.078 13.14-7.3v-.002Zm-16.2 7.89 7.6 4.222V38.3L2 30.966V7.92l5.6 3.111v16.892ZM8.6 9.3 3.06 6.222 8.6 3.143l5.54 3.08L8.6 9.3Zm21.8 15.51-13.2 7.334V38.3l13.2-7.334v-6.156ZM9.6 11.034l5.6-3.11v14.6l-5.6 3.11v-14.6Z"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none" {{ $attributes }}>
+    <defs>
+        <linearGradient id="nexalvia-mark-gradient" x1="18" y1="21" x2="78" y2="76" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#0B1D3A" />
+            <stop offset="0.52" stop-color="#0EA5E9" />
+            <stop offset="1" stop-color="#00C2C7" />
+        </linearGradient>
+    </defs>
+
+    <path
+        d="M18 66V34.5C18 25.4 29.1 20.9 35.5 27.3L58.2 50C62.7 54.5 70.5 51.3 70.5 44.9V36.8C70.5 31.7 73.1 27 77.4 24.4L82 21.6"
+        stroke="url(#nexalvia-mark-gradient)"
+        stroke-width="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
     />
+    <path
+        d="M78 31V60.5C78 69.7 66.8 74.2 60.4 67.7L37.9 45.2C33.4 40.7 25.8 43.9 25.8 50.2V59.1C25.8 63.8 23.7 68.2 20 71.1L14 75.8"
+        stroke="url(#nexalvia-mark-gradient)"
+        stroke-width="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
+    <circle cx="14" cy="75.8" r="6" fill="#0B1D3A" />
+    <circle cx="82" cy="21.6" r="7" fill="#00C2C7" />
+    <circle cx="60" cy="68" r="6" fill="#00C2C7" stroke="white" stroke-width="3" />
 </svg>

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Country;
 use App\Models\DocumentType;
 use App\Models\Enterprise;
 use Illuminate\Database\Seeder;
@@ -11,6 +12,7 @@ class EnterprisesSeeder extends Seeder
     public function run(): void
     {
         $nitDocumentType = DocumentType::query()->where('code', 'nit')->firstOrFail();
+        $country = Country::query()->where('code', 'CO')->firstOrFail();
 
         $enterprises = [
             [
@@ -34,6 +36,7 @@ class EnterprisesSeeder extends Seeder
                 $enterprise + [
                     'document_types_Id' => $nitDocumentType->getKey(),
                     'country' => 'Colombia',
+                    'countries_Id' => $country->getKey(),
                 ],
             );
         }

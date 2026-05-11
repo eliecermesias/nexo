@@ -3,4 +3,5 @@
 use App\Http\Controllers\EnterpriseController;
 use Illuminate\Support\Facades\Route;
 
-Route::resource('/', EnterpriseController::class)->names('enterprises');
+Route::resource('enterprises', EnterpriseController::class)
+    ->parameters(['enterprises' => 'enterprise']);

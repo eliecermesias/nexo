@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Enterprise extends Model
 {
+    use HasFactory;
+
     protected $primaryKey = 'Id';
 
     protected $fillable = [
@@ -21,6 +24,9 @@ class Enterprise extends Model
         'city',
         'state',
         'country',
+        'countries_Id',
+        'states_Id',
+        'cities_Id',
         'tax_regime',
     ];
 
@@ -32,6 +38,21 @@ class Enterprise extends Model
     public function documentType(): BelongsTo
     {
         return $this->belongsTo(DocumentType::class, 'document_types_Id', 'Id');
+    }
+
+    public function countryLocation(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'countries_Id', 'Id');
+    }
+
+    public function stateLocation(): BelongsTo
+    {
+        return $this->belongsTo(State::class, 'states_Id', 'Id');
+    }
+
+    public function cityLocation(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'cities_Id', 'Id');
     }
 
     public function bankAccounts(): HasMany

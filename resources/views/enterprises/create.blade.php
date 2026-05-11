@@ -1,8 +1,8 @@
 <x-layouts::app>
     <div class="mb-4 flex items-center justify-between">
         <flux:breadcrumbs>
-            <flux:breadcrumbs.item :href="route('enterprises.index')">Empresas</flux:breadcrumbs.item>
-            <flux:breadcrumbs.item>{{ __('Editar') }}</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item :href="route('enterprises.index')">{{ __('Enterprises') }}</flux:breadcrumbs.item>
+            <flux:breadcrumbs.item>{{ __('Create') }}</flux:breadcrumbs.item>
         </flux:breadcrumbs>
     </div>
 
@@ -11,7 +11,7 @@
     @endphp
 
     <form
-        action="{{ route('enterprises.update', $enterprise) }}"
+        action="{{ route('enterprises.store') }}"
         method="POST"
         class="w-full space-y-6 md:w-1/4 md:min-w-[20rem]"
         x-data="{
@@ -46,12 +46,24 @@
         }"
     >
         @csrf
-        @method('PATCH')
+
+        <div>
+            <label for="document_types_Id" class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                {{ __('Document type') }}
+            </label>
+            <select id="document_types_Id" name="document_types_Id" required class="{{ $selectClass }}">
+                <option value="">{{ __('Select a document type') }}</option>
+                @foreach ($documentTypes as $documentType)
+                    <option value="{{ $documentType->getKey() }}" @selected(old('document_types_Id') == $documentType->getKey())>{{ $documentType->name }}</option>
+                @endforeach
+            </select>
+            @error('document_types_Id') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
+        </div>
 
         <flux:input
             name="document_number"
-            :label="__('Numero de documento')"
-            :value="old('document_number', $enterprise->document_number)"
+            :label="__('Document number')"
+            :value="old('document_number')"
             required
             maxlength="50"
             autofocus
@@ -59,40 +71,40 @@
 
         <flux:input
             name="legal_name"
-            :label="__('Razon social')"
-            :value="old('legal_name', $enterprise->legal_name)"
+            :label="__('Legal name')"
+            :value="old('legal_name')"
             required
             maxlength="180"
         />
 
         <flux:input
             name="trade_name"
-            :label="__('Nombre comercial')"
-            :value="old('trade_name', $enterprise->trade_name)"
+            :label="__('Trade name')"
+            :value="old('trade_name')"
             maxlength="180"
         />
 
         <flux:input
             name="email"
-            :label="__('Correo')"
+            :label="__('Email')"
             type="email"
-            :value="old('email', $enterprise->email)"
+            :value="old('email')"
             maxlength="180"
         />
 
         <flux:input
             name="phone"
-            :label="__('Telefono')"
-            :value="old('phone', $enterprise->phone)"
+            :label="__('Phone')"
+            :value="old('phone')"
             maxlength="40"
         />
 
         <div>
             <label for="countries_Id" class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                {{ __('Pais') }}
+                {{ __('Country') }}
             </label>
             <select id="countries_Id" name="countries_Id" x-model="countryId" x-on:change="changeCountry" required class="{{ $selectClass }}">
-                <option value="">{{ __('Seleccione un pais') }}</option>
+                <option value="">{{ __('Select a country') }}</option>
                 @foreach ($countries as $country)
                     <option value="{{ $country->getKey() }}">{{ $country->name }}</option>
                 @endforeach
@@ -102,10 +114,10 @@
 
         <div>
             <label for="states_Id" class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                {{ __('Departamento/Estado') }}
+                {{ __('State') }}
             </label>
             <select id="states_Id" name="states_Id" x-model="stateId" x-on:change="changeState" :disabled="!countryId" class="{{ $selectClass }}">
-                <option value="">{{ __('Seleccione un departamento/estado') }}</option>
+                <option value="">{{ __('Select a state') }}</option>
                 <template x-for="state in filteredStates" :key="state.Id">
                     <option :value="String(state.Id)" x-text="state.name"></option>
                 </template>
@@ -115,10 +127,10 @@
 
         <div>
             <label for="cities_Id" class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                {{ __('Ciudad') }}
+                {{ __('City') }}
             </label>
             <select id="cities_Id" name="cities_Id" x-model="cityId" :disabled="!stateId" class="{{ $selectClass }}">
-                <option value="">{{ __('Seleccione una ciudad') }}</option>
+                <option value="">{{ __('Select a city') }}</option>
                 <template x-for="city in filteredCities" :key="city.Id">
                     <option :value="String(city.Id)" x-text="city.is_capital ? `${city.name} (capital)` : city.name"></option>
                 </template>
@@ -128,25 +140,25 @@
 
         <flux:input
             name="address"
-            :label="__('Direccion')"
-            :value="old('address', $enterprise->address)"
+            :label="__('Address')"
+            :value="old('address')"
             maxlength="255"
         />
 
         <flux:input
             name="tax_regime"
-            :label="__('Regimen tributario')"
-            :value="old('tax_regime', $enterprise->tax_regime)"
+            :label="__('Tax regime')"
+            :value="old('tax_regime')"
             maxlength="120"
         />
 
         <div class="flex gap-2">
             <flux:button variant="primary" type="submit">
-                {{ __('Guardar') }}
+                {{ __('Save') }}
             </flux:button>
 
-            <flux:button variant="filled" :href="route('enterprises.show', $enterprise)">
-                {{ __('Cancelar') }}
+            <flux:button variant="filled" :href="route('enterprises.index')">
+                {{ __('Cancel') }}
             </flux:button>
         </div>
     </form>

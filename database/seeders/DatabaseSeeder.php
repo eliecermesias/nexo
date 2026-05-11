@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             DocumentTypesSeeder::class,
+            LocationsSeeder::class,
             DocumentStatusesSeeder::class,
             CurrenciesSeeder::class,
             TaxesSeeder::class,

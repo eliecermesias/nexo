@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo - Simplifica tu Gestión Comercial</title>
+    <title>Nexalvia - Simplifica tu Gestión Comercial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,13 +14,13 @@
             --color-primary: #0EA5E9;
             --color-primary-dark: #0284C7;
             --color-glow: rgba(14, 165, 233, 0.5);
-            --color-bg: #0F172A;
-            --color-bg-card: #1E293B;
+            --color-bg: #0B1D3A;
+            --color-bg-card: #08244D;
         }
         
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            background: linear-gradient(135deg, #0B1D3A 0%, #08244D 100%);
             background-attachment: fixed;
         }
         
@@ -154,7 +154,7 @@
         }
         
         .text-gradient {
-            background: linear-gradient(135deg, #0EA5E9, #3B82F6);
+            background: linear-gradient(135deg, #0EA5E9, #00C2C7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -180,15 +180,6 @@
         .delay-300 { animation-delay: 0.3s; }
         .delay-400 { animation-delay: 0.4s; }
         
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #0EA5E9, #3B82F6);
-            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M20,50 L50,20 L80,50 L50,80 Z M35,50 L50,35 L65,50 L50,65 Z'/%3E%3C/svg%3E");
-            mask-size: contain;
-            mask-repeat: no-repeat;
-            mask-position: center;
-        }
     </style>
 </head>
 <body class="text-white">
@@ -201,8 +192,10 @@
             <nav class="flex items-center justify-between">
                 <!-- Logo -->
                 <div class="flex items-center gap-3">
-                    <div class="logo-icon"></div>
-                    <span class="logo-text text-2xl text-white">Nexo</span>
+                    <span class="flex size-10 items-center justify-center rounded-xl bg-white shadow-[0_0_24px_-8px_rgba(0,194,199,0.9)]">
+                        <x-app-logo-icon class="size-8" />
+                    </span>
+                    <span class="logo-text text-2xl text-white">Nexalvia</span>
                 </div>
                 
                 <!-- Navigation -->
@@ -254,7 +247,7 @@
                     </h1>
                     
                     <p class="text-lg text-gray-300 max-w-xl leading-relaxed">
-                        Nexo es la plataforma modular diseñada para empresas que exigen profesionalismo y agilidad. Optimiza tu flujo de trabajo, cierra más tratos y gestiona cobros sin esfuerzo.
+                        Nexalvia es la plataforma modular diseñada para empresas que exigen profesionalismo y agilidad. Optimiza tu flujo de trabajo, cierra más tratos y gestiona cobros sin esfuerzo.
                     </p>
                     
                     <div class="flex flex-wrap gap-4">
@@ -277,8 +270,10 @@
                             <div class="bg-slate-800 p-4 border-b border-gray-700">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
-                                        <div class="logo-icon w-6 h-6"></div>
-                                        <span class="font-semibold text-sm">Nexo</span>
+                                        <span class="flex size-7 items-center justify-center rounded-lg bg-white">
+                                            <x-app-logo-icon class="size-6" />
+                                        </span>
+                                        <span class="font-semibold text-sm">Nexalvia</span>
                                     </div>
                                     <div class="flex gap-2">
                                         <div class="w-3 h-3 rounded-full bg-red-500"></div>
