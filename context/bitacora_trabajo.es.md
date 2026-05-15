@@ -6,11 +6,11 @@
 - URL: `https://github.com/eliecermesias/nexo`
 - Rama principal: `main`
 - Rama de trabajo actual: `devops`
-- Último commit revisado: `5eba66343a5f6091611a4ba2490d002a23420415`
-- Commit en GitHub: `https://github.com/eliecermesias/nexo/commit/5eba66343a5f6091611a4ba2490d002a23420415`
+- Último commit revisado: `20227252c87d3a9d5f198a60c3008ed3b304224c`
+- Commit en GitHub: `https://github.com/eliecermesias/nexo/commit/20227252c87d3a9d5f198a60c3008ed3b304224c`
 - Estado de PRs en GitHub: sin pull requests abiertos.
 - Estado de issues en GitHub: sin issues abiertos.
-- Estado local al cierre del 2026-05-09: con cambios pendientes para revisar, commitear y subir manualmente desde la rama `devops`.
+- Estado local al cierre del 2026-05-10: commits `ae9a449` y `2022725` publicados en `origin/devops`. Queda pendiente commitear esta actualización de bitácora.
 
 ## Resumen Ejecutivo
 
@@ -29,6 +29,9 @@ Además, se generó documentación funcional y técnica para orientar a los desa
 | `93462f9` | 2026-05-02 | Ajustes de menú. |
 | `9548bf6` | 2026-05-05 | Punto de control antes de modificar el diseño de `sidebar.blade.php`. |
 | `5eba663` | 2026-05-08 | Revisión de base de datos para empezar a programar en serio. |
+| `f2feebf` | 2026-05-09 | Ajuste en modelos y migraciones para el sistema Nexo. |
+| `ae9a449` | 2026-05-10 | Ajuste visual de la funcionalidad probada con enterprises. |
+| `2022725` | 2026-05-10 | Segunda parte: módulo enterprises, ubicaciones, marca visual y pruebas. |
 
 ## Trabajo Publicado en `devops`
 
@@ -638,3 +641,389 @@ Pendientes para la próxima sesión:
 2. Revisar visualmente el sidebar en modo claro.
 3. Continuar con factories y relaciones Eloquent para los nuevos modelos comerciales.
 4. Ejecutar una suite más amplia cuando el entorno de testing quede estable.
+
+## Entrada de Trabajo - 2026-05-10
+
+Se continuó con el paso de la estructura comercial hacia funcionalidad visible, concentrando el trabajo en el módulo de empresas, ubicaciones Colombia/DIVIPOLA, ajustes visuales de marca y pruebas feature.
+
+Commits de referencia:
+
+- `ae9a449` - `20260510 - ajuste visual de la funcionalidad probada con enterprises,`
+- `2022725` - `20260510 - segunda parte`
+
+### Módulo de empresas
+
+Se completó una primera versión funcional del CRUD de `enterprises`:
+
+- `app/Http/Controllers/EnterpriseController.php`
+  - Se reemplazó el uso del modelo antiguo `Enterprises` por `Enterprise`.
+  - Se agregó listado paginado con `paginate(15)`.
+  - Se implementaron las acciones `create`, `store`, `show`, `edit` y `update`.
+  - Se agregaron validaciones para tipo de documento, número, razón social, contacto, régimen tributario y ubicación.
+  - Se validó consistencia jerárquica entre país, departamento/estado y ciudad antes de guardar.
+  - Se persisten tanto las referencias `countries_Id`, `states_Id`, `cities_Id` como los textos `country`, `state`, `city` para conservar compatibilidad con el esquema actual.
+
+- `routes/enterprise.php` y `routes/web.php`
+  - Se corrigió la definición del resource para que las rutas queden como `enterprises.*`.
+  - Se ajustó el route model binding con parámetro `enterprise`.
+  - Se retiró el prefijo duplicado que generaba rutas anidadas incorrectas.
+
+- Vistas de `resources/views/enterprises/`
+  - Se agregó `create.blade.php`.
+  - Se agregó `show.blade.php`.
+  - Se ajustó `edit.blade.php`.
+  - Se rediseñó `index.blade.php` para directorio paginado, acciones de consulta/edición, estado vacío y mejor presentación visual.
+
+### Ubicaciones y DIVIPOLA
+
+Se incorporó una base inicial de ubicaciones para Colombia:
+
+- Nuevos modelos:
+  - `Country`
+  - `State`
+  - `City`
+
+- Nuevas migraciones:
+  - `2026_05_10_200000_create_locations_tables.php`
+  - `2026_05_10_200001_add_location_references_to_enterprises_table.php`
+  - `2026_05_10_200002_add_divipola_fields_to_locations_tables.php`
+
+- Nuevos factories:
+  - `CountryFactory`
+  - `StateFactory`
+  - `CityFactory`
+  - `EnterpriseFactory`
+
+- Nuevo seeder:
+  - `LocationsSeeder`
+
+- Nuevo soporte de lectura:
+  - `app/Support/DivipolaMunicipalities.php`
+  - Lee `context/DIVIPOLA_Municipios.ods`.
+  - Extrae departamentos, municipios, tipo, longitud, latitud y marca capitales.
+  - Ordena municipios priorizando capitales dentro de cada departamento.
+
+También se agregó `LocationsSeeder` a `DatabaseSeeder` y se ajustó `EnterprisesSeeder` para trabajar con los nuevos datos de ubicación.
+
+### Marca, favicon y ajustes visuales
+
+Se trabajó en la identidad visual y en la coherencia de modo claro/oscuro:
+
+- Se agregó imagen de referencia de marca en `context/nexalvia.png`.
+- Se agregaron capturas de revisión visual:
+  - `context/modo_claro.png`
+  - `context/modo_oscuro.png`
+- Se actualizaron favicon y Apple touch icon:
+  - `public/favicon.ico`
+  - `public/favicon.svg`
+  - `public/apple-touch-icon.png`
+- Se ajustaron componentes de logo:
+  - `resources/views/components/app-logo.blade.php`
+  - `resources/views/components/app-logo-icon.blade.php`
+- Se ampliaron estilos globales en `resources/css/app.css`.
+- Se ajustaron layouts de autenticación y vistas públicas:
+  - `resources/views/layouts/auth/card.blade.php`
+  - `resources/views/layouts/auth/simple.blade.php`
+  - `resources/views/layouts/auth/split.blade.php`
+  - `resources/views/pages/front.blade.php`
+  - `resources/views/welcome.blade.php`
+  - `resources/views/partials/head.blade.php`
+
+### Sidebar, sesión y menú
+
+Se continuó refinando la navegación:
+
+- `resources/views/layouts/app/sidebar.blade.php`
+  - Ajustes de estilos para mejorar lectura en modo claro y oscuro.
+  - Correcciones de estructura visual del sidebar.
+
+- `resources/views/layouts/app/sesion.blade.php`
+  - Ajustes de presentación de sesión.
+
+- `database/seeders/MenuSeeder.php`
+  - Ajustes menores de rutas/entradas para conectar con el módulo `enterprises`.
+
+### Limpieza y revisión de estructura
+
+Se agregó:
+
+- `context/unused_directories_review.csv`
+
+Este archivo documenta una revisión de directorios o rutas no usadas para facilitar limpieza posterior sin eliminar archivos a ciegas.
+
+### Pruebas agregadas
+
+Se agregaron pruebas feature para el módulo de empresas:
+
+- `tests/Feature/Enterprises/EnterpriseIndexTest.php`
+  - Verifica que un usuario autenticado pueda ver el directorio de empresas.
+  - Verifica enlaces a crear, ver y editar.
+  - Verifica estado vacío.
+  - Verifica paginación.
+
+- `tests/Feature/Enterprises/EnterpriseCreateTest.php`
+  - Verifica que un usuario autenticado pueda ver el formulario de creación.
+  - Verifica creación de empresa con documento, contacto, ubicación y régimen tributario.
+  - Verifica redirección al detalle de la empresa creada.
+
+Verificaciones asociadas al cierre:
+
+- Commits publicados en `origin/devops`.
+- Las pruebas relevantes quedan registradas en los commits, pero en esta actualización de bitácora no se reejecutó la suite porque el cambio actual es documental.
+
+### Estado de cierre del 2026-05-10
+
+Rama actual:
+
+- `devops`
+
+Último commit publicado:
+
+- `2022725`
+
+Estado:
+
+- El módulo `enterprises` ya tiene navegación, listado, creación, edición y detalle iniciales.
+- El proyecto ya cuenta con tablas y seeders base para ubicaciones Colombia/DIVIPOLA.
+- La identidad visual empezó a consolidarse con favicon, logo y ajustes de layout.
+- La bitácora fue actualizada posteriormente para reflejar este trabajo.
+
+Pendientes recomendados:
+
+1. Reejecutar las pruebas de enterprises y esquema comercial antes del próximo commit funcional.
+2. Revisar en navegador el formulario de creación/edición de empresas con datos reales del seeder DIVIPOLA.
+3. Corregir textos sin tilde pendientes en mensajes de validación si se decide normalizar todo el copy en español.
+4. Revisar si `resources/views/layouts/app/sidebar.blade_ .php` debe conservarse, renombrarse o eliminarse con una decisión explícita.
+5. Continuar con el siguiente módulo comercial después de estabilizar `enterprises`.
+
+## Entrada de Trabajo - 2026-05-11
+
+Se continuó con el ajuste visual de marca usando los assets definitivos de Nexalvia dejados en `context/nexalvia-assets-web/`.
+
+### Assets de marca en `public`
+
+Se copiaron y normalizaron nombres de imágenes para uso público:
+
+- `public/logo-nexalvia-horizontal.png`
+- `public/logo-nexalvia-horizontal.webp`
+- `public/logo-nexalvia-principal.png`
+- `public/logo-nexalvia-principal.webp`
+- `public/logo-nexalvia-symbol.png`
+- `public/logo-nexalvia-symbol.webp`
+- `public/logo-nexalvia-icon-512.png`
+- `public/favicon-32x32.png`
+- `public/favicon-64x64.png`
+- `public/apple-touch-icon.png`
+
+También se actualizaron referencias de favicon en:
+
+- `resources/views/partials/head.blade.php`
+- `resources/views/welcome.blade.php`
+
+### Logo del sidebar
+
+Se ajustó `resources/views/layouts/app/sidebar.blade.php`:
+
+- Se reemplazó el logo pequeño anterior por el logo horizontal.
+- Se centró el logo dentro del panel lateral.
+- Se agregó recuadro blanco `#FFFFFF`.
+- Se incrementó el `border-radius` a `rounded-3xl`.
+- Se reforzó la sombra interna para dar más profundidad.
+- Se mantuvo `backdrop-blur-[5px]` para lograr el efecto de sidebar sobrepuesto al logo.
+- Se usó WebP con fallback PNG.
+
+### Componente de símbolo
+
+Se actualizó `resources/views/components/app-logo-icon.blade.php`:
+
+- Se reemplazó el SVG inline por la imagen pública `logo-nexalvia-symbol.png`.
+- El componente conserva la posibilidad de recibir clases desde sus consumidores.
+
+### Pantalla de login y layout de sesión
+
+Se ajustó `resources/views/layouts/app/sesion.blade.php` para mejorar el comportamiento vertical:
+
+- Se eliminó `overflow-hidden`, que impedía scroll en pantallas pequeñas.
+- Se agregó `overflow-y-auto`.
+- Se usó `min-h-dvh` para ajustarse mejor al alto real de la ventana.
+- Se redujeron paddings en móvil.
+- Se dejó el contenido alineado arriba en pantallas pequeñas y centrado desde `sm`.
+- Se redujo el tamaño del logo en móvil.
+- Se mantuvieron fondos fijos decorativos para que el scroll afecte sólo el contenido.
+
+Se limpió `resources/views/pages/auth/login.blade.php`:
+
+- Se normalizó indentación.
+- Se compactaron márgenes verticales en móvil.
+- Se mantuvo el formulario Fortify apuntando a `route('login.store')`.
+
+### Verificaciones ejecutadas
+
+- `vendor/bin/pint --dirty --format agent`
+- `php artisan view:cache`
+- `php artisan view:clear`
+- `DB_CONNECTION=mysql DB_HOST=localhost DB_PORT=3306 DB_DATABASE=nexo_test_codex DB_USERNAME=admin DB_PASSWORD=1234 php artisan test --compact tests/Feature/Auth/AuthenticationTest.php --filter=test_login_screen_can_be_rendered`
+- `DB_CONNECTION=mysql DB_HOST=localhost DB_PORT=3306 DB_DATABASE=nexo_test_codex DB_USERNAME=admin DB_PASSWORD=1234 php artisan test --compact tests/Feature/DashboardTest.php`
+
+Resultado:
+
+- Pint pasó.
+- La compilación de vistas Blade pasó.
+- La prueba de render del login pasó.
+- La prueba del dashboard pasó: 2 tests, 3 assertions.
+
+Nota del entorno:
+
+- Las pruebas con SQLite no se usaron porque el PHP CLI no tiene disponible `pdo_sqlite`.
+- Para las pruebas relacionadas se usó MySQL local temporal `nexo_test_codex`.
+
+## Entrada de Trabajo - 2026-05-15
+
+Se inició una etapa de organización del desarrollo guiado por requerimientos. El objetivo fue convertir la visión de Nexo en issues, especificaciones y documentos de decisión que sirvan como guía antes de continuar con nuevos módulos funcionales.
+
+### Descripción actual de la plataforma
+
+Nexo es una plataforma web SaaS para profesionales independientes, consultores, docentes, pequeñas empresas y proveedores de servicios que necesitan gestionar documentos comerciales y de cobro de forma ordenada, segura y trazable.
+
+La plataforma permite administrar clientes, servicios, cotizaciones, propuestas, cuentas de cobro, facturas, pagos, cuentas bancarias, plantillas documentales y soportes requeridos por cada empresa cliente.
+
+Su valor diferencial está en la gestión documental configurable: cada cliente puede exigir documentos distintos para recibir o pagar una cuenta de cobro, como RUT, cédula, planilla de seguridad social, orden de compra, orden de trabajo, factura externa o soportes operativos. Nexo permitirá configurar esos requisitos, validar si están completos, bloquear radicaciones incompletas y generar paquetes documentales listos para entregar.
+
+En términos de producto, Nexo no debe limitarse a generar cuentas de cobro. Debe convertirse en una plataforma para preparar, validar, organizar, generar y entregar documentos comerciales con cumplimiento, trazabilidad y control.
+
+### Issues creados en GitHub
+
+Se crearon issues iniciales en `eliecermesias/nexo` para ordenar el trabajo:
+
+1. `#1` - `[Proceso] Definir flujo de desarrollo guiado por requerimientos`
+2. `#2` - `[Épica] Completar base de navegación, dashboard y estructura multi-equipo`
+3. `#3` - `[Épica] Gestionar clientes: Enterprises, People y Contacts`
+4. `#4` - `[Épica] Gestionar catálogo comercial: Services, Plans y Taxes`
+5. `#5` - `[Épica] Implementar cotizaciones comerciales`
+6. `#6` - `[Épica] Implementar propuestas comerciales`
+7. `#7` - `[Épica] Implementar cuentas de cobro`
+8. `#8` - `[Épica] Implementar facturación`
+9. `#9` - `[Épica] Implementar pagos y configuración bancaria`
+10. `#10` - `[Épica] Implementar plantillas, versiones y adjuntos de documentos`
+11. `#11` - `[Épica] Configurar requisitos documentales por empresa cliente`
+
+El issue `#11` captura una condición crítica del negocio: cada empresa cliente puede exigir documentos propios antes de recibir, aprobar o pagar una cuenta de cobro. Este módulo debe permitir reglas configurables, por ejemplo documentos siempre requeridos o requeridos cuando el valor supera un salario mínimo.
+
+### Especificaciones creadas
+
+Se creó el directorio:
+
+- `context/spec/`
+
+Allí se generó una primera base de especificaciones bilingües derivada de `context/genera_especificacion.md`:
+
+- `spec.md` / `spec.es.md`
+- `architecture.md` / `architecture.es.md`
+- `requirements.md` / `requirements.es.md`
+- `database.md` / `database.es.md`
+- `security.md` / `security.es.md`
+- `testing.md` / `testing.es.md`
+- `roadmap.md` / `roadmap.es.md`
+- `backlog.md` / `backlog.es.md`
+- `api.md` / `api.es.md`
+
+Estos documentos definen visión de producto, alcance funcional, arquitectura, requerimientos, modelo de datos objetivo, seguridad OWASP, estrategia de pruebas, roadmap, backlog y alcance inicial de API.
+
+### Evaluación de base de datos
+
+Se evaluó el esquema real de MySQL usando Laravel Boost y se comparó contra las especificaciones en `context/spec`.
+
+Documentos generados:
+
+- `context/spec/database-gap-analysis.md`
+- `context/spec/database-gap-analysis.es.md`
+- `context/spec/resumen-ejecutivo-evaluacion-bd.es.md`
+
+Conclusiones principales:
+
+- La base actual tiene un avance comercial importante.
+- Ya existen tablas para usuarios, equipos, menús, catálogos, empresas, contactos, cotizaciones, propuestas, cuentas de cobro, facturas, pagos, cuentas bancarias, destinos de pago, plantillas y adjuntos básicos.
+- La base todavía no cumple los requerimientos completos de SaaS, Compliance Matrix, gestión documental segura, paquetes PDF, consecutivos y auditoría.
+- Las tablas de negocio no tienen `team_id`, `user_id` ni un ownership explícito.
+- El esquema mezcla convenciones Laravel (`id`, `*_id`) con nombres heredados (`Id`, `*_Id`).
+- No existen tablas para `compliance_matrices`, `compliance_requirements`, `uploaded_documents`, `document_packages`, `generated_documents`, `internal_sequences`, `sequence_histories`, `activity_logs` ni `audit_logs`.
+
+### Recomendación técnica central
+
+Antes de continuar construyendo módulos visibles, se recomienda estabilizar el modelo de datos.
+
+Decisión recomendada:
+
+```text
+Nexo debe ser una plataforma team-scoped, usando team_id como frontera principal de ownership para todos los datos de negocio.
+```
+
+Razones:
+
+- La aplicación ya tiene equipos.
+- Permite crecer hacia roles como administrador, asistente, auditor o colaborador.
+- Facilita Policies de Laravel.
+- Ayuda a prevenir IDOR.
+- Es más flexible para una plataforma SaaS que depender sólo de `user_id`.
+
+### Plan de trabajo sugerido
+
+Orden recomendado:
+
+1. Congelar decisiones técnicas: ownership, convenciones Laravel y nombres finales de módulos.
+2. Agregar `team_id` a tablas de negocio.
+3. Agregar campos de trazabilidad como `created_by`, `updated_by`, `uploaded_by`, `approved_by` y `generated_by`.
+4. Normalizar convenciones de columnas a `id` y `*_id` si el proyecto todavía puede absorber el cambio.
+5. Crear Compliance Matrix:
+   - `compliance_matrices`
+   - `compliance_requirements`
+   - `compliance_requirement_conditions`
+   - `compliance_validation_results`
+   - `compliance_validation_items`
+6. Crear gestión documental segura:
+   - `uploaded_documents`
+   - relación con requisitos, empresas, cuentas de cobro y facturas.
+7. Crear generación y combinación de documentos:
+   - `generated_documents`
+   - `document_packages`
+   - `document_package_items`
+8. Crear consecutivos:
+   - `internal_sequences`
+   - `sequence_counters`
+   - `sequence_histories`
+   - `external_invoice_numbers`
+9. Crear auditoría:
+   - `activity_logs`
+   - `audit_logs`
+10. Implementar pruebas de aislamiento, Compliance, documentos, paquetes PDF, consecutivos y auditoría.
+
+### Siguiente paso recomendado
+
+Crear una épica técnica en GitHub:
+
+```text
+[Épica Técnica] Estabilizar ownership, convenciones Laravel y base SaaS de Nexo
+```
+
+Criterios de aceptación sugeridos:
+
+- Todas las tablas de negocio tienen `team_id`.
+- Las consultas críticas filtran por equipo.
+- Los modelos principales tienen relaciones de ownership.
+- Existen tests de aislamiento de datos entre equipos.
+- Se define una decisión final sobre normalización de `Id`/`*_Id`.
+- Las nuevas migrations usan convención Laravel.
+
+Después de esa fase, el siguiente bloque recomendado es:
+
+```text
+[Épica Técnica] Implementar Compliance Matrix y documentos requeridos por empresa cliente
+```
+
+### Verificaciones ejecutadas
+
+En esta sesión no se ejecutaron pruebas automatizadas porque los cambios fueron documentales y de planificación. Sí se verificó:
+
+- Existencia de archivos creados en `context/spec`.
+- Tamaño de los documentos generados.
+- Estado Git de los archivos documentales.

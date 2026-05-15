@@ -13,11 +13,15 @@
 
         <flux:sidebar sticky collapsible="mobile" class="dark border-e border-white/10 bg-[#0B1D3A]/82 text-white shadow-[0_0_44px_-18px_rgba(0,194,199,0.7)] backdrop-blur-xl [&_[data-flux-sidebar-group-heading]]:text-sky-100/70 [&_[data-flux-sidebar-item]]:text-sky-100/80 [&_[data-flux-sidebar-item]:hover]:bg-[#00C2C7]/10 [&_[data-flux-sidebar-item]:hover]:text-white [&_[data-flux-sidebar-item][data-current]]:bg-[#0EA5E9]/16 [&_[data-flux-sidebar-item][data-current]]:text-white">
             <flux:sidebar.header class="border-b border-white/10">
-                <a href="{{ route('dashboard') }}" class="flex flex-col items-center gap-2 py-2 text-white" wire:navigate>
-                    <span class="flex aspect-square size-10 items-center justify-center rounded-xl border border-[#00C2C7]/30 bg-white shadow-[0_0_28px_-8px_rgba(0,194,199,0.9)]">
-                        <x-app-logo-icon class="size-8" />
-                    </span>
-                    <span class="text-sm font-semibold leading-none text-white">Nexalvia</span>
+                <a href="{{ route('dashboard') }}" class="flex w-full items-center justify-center px-4 py-4 text-white" aria-label="Nexalvia" wire:navigate>
+                    <picture class="flex w-full max-w-[200px] justify-center rounded-3xl border border-white bg-white px-4 py-3 shadow-[inset_0_4px_22px_rgba(11,29,58,0.30),inset_0_-8px_18px_rgba(14,165,233,0.10),0_18px_34px_-24px_rgba(255,255,255,0.72)] backdrop-blur-[5px]">
+                        <source srcset="{{ asset('logo-nexalvia-horizontal.webp') }}" type="image/webp">
+                        <img
+                            src="{{ asset('logo-nexalvia-horizontal.png') }}"
+                            alt="Nexalvia"
+                            class="h-14 w-auto max-w-full object-contain"
+                        >
+                    </picture>
                 </a>
 
                 <flux:sidebar.collapse class="lg:hidden" />

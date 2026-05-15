@@ -1,27 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none" {{ $attributes }}>
-    <defs>
-        <linearGradient id="nexalvia-mark-gradient" x1="18" y1="21" x2="78" y2="76" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#0B1D3A" />
-            <stop offset="0.52" stop-color="#0EA5E9" />
-            <stop offset="1" stop-color="#00C2C7" />
-        </linearGradient>
-    </defs>
-
-    <path
-        d="M18 66V34.5C18 25.4 29.1 20.9 35.5 27.3L58.2 50C62.7 54.5 70.5 51.3 70.5 44.9V36.8C70.5 31.7 73.1 27 77.4 24.4L82 21.6"
-        stroke="url(#nexalvia-mark-gradient)"
-        stroke-width="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-    />
-    <path
-        d="M78 31V60.5C78 69.7 66.8 74.2 60.4 67.7L37.9 45.2C33.4 40.7 25.8 43.9 25.8 50.2V59.1C25.8 63.8 23.7 68.2 20 71.1L14 75.8"
-        stroke="url(#nexalvia-mark-gradient)"
-        stroke-width="10"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-    />
-    <circle cx="14" cy="75.8" r="6" fill="#0B1D3A" />
-    <circle cx="82" cy="21.6" r="7" fill="#00C2C7" />
-    <circle cx="60" cy="68" r="6" fill="#00C2C7" stroke="white" stroke-width="3" />
-</svg>
+<img
+    src="{{ asset('logo-nexalvia-symbol.png') }}"
+    alt="Nexalvia"
+    {{ $attributes->class('object-contain') }}
+>
