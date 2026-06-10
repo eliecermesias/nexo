@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\DocumentType;
 use App\Models\Party;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class PartiesSeeder extends Seeder
@@ -11,6 +12,7 @@ class PartiesSeeder extends Seeder
     public function run(): void
     {
         $nitDocumentType = DocumentType::query()->where('code', 'nit')->firstOrFail();
+        $owner = User::query()->firstOrFail();
 
         $parties = [
             [
@@ -38,6 +40,9 @@ class PartiesSeeder extends Seeder
                     'document_number' => $party['document_number'],
                 ],
                 $party + [
+                    'team_id' => $owner->currentTeam?->id,
+                    'created_by' => $owner->getKey(),
+                    'updated_by' => $owner->getKey(),
                     'document_types_Id' => $nitDocumentType->getKey(),
                     'country' => 'Colombia',
                 ],

@@ -27,10 +27,14 @@ class DatabaseSeeder extends Seeder
             DocumentStatusesSeeder::class,
             CurrenciesSeeder::class,
             TaxesSeeder::class,
+            ServicesSeeder::class,
             PaymentMethodsSeeder::class,
             BanksSeeder::class,
             EnterprisesSeeder::class,
             PartiesSeeder::class,
+            ContactsSeeder::class,
+            DocumentTemplatesSeeder::class,
+            QuotationSettingsSeeder::class,
             MenuSeeder::class,
         ]);
     }

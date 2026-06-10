@@ -2,20 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Quotation extends Model
 {
+    use HasFactory;
+
     protected $primaryKey = 'Id';
 
     protected $fillable = [
+        'team_id',
+        'created_by',
+        'updated_by',
         'enterprises_Id',
         'parties_Id',
         'contacts_Id',
         'currencies_Id',
         'document_statuses_Id',
+        'document_template_versions_Id',
         'number',
         'issue_date',
         'valid_until',
@@ -62,6 +69,21 @@ class Quotation extends Model
     public function documentStatus(): BelongsTo
     {
         return $this->belongsTo(DocumentStatus::class, 'document_statuses_Id', 'Id');
+    }
+
+    public function templateVersion(): BelongsTo
+    {
+        return $this->belongsTo(DocumentTemplateVersion::class, 'document_template_versions_Id', 'Id');
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     public function items(): HasMany

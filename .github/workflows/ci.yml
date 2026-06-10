@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - master
+      - workos
+  pull_request:
+    branches:
+      - develop
+      - main
+      - master
+      - workos
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: PHP checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      FLUX_USERNAME: ${{ secrets.FLUX_USERNAME }}
+      FLUX_LICENSE_KEY: ${{ secrets.FLUX_LICENSE_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: dom, fileinfo, mbstring, pdo_sqlite, sqlite3
+          tools: composer:v2
+          coverage: none
+
+      - name: Configure Flux credentials
+        if: env.FLUX_USERNAME != '' && env.FLUX_LICENSE_KEY != ''
+        run: composer config http-basic.composer.fluxui.dev "$FLUX_USERNAME" "$FLUX_LICENSE_KEY"
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress --optimize-autoloader
+
+      - name: Prepare Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Check PHP style
+        run: vendor/bin/pint --test --format=github
+
+      - name: Run test suite
+        run: php artisan test --compact
+
+  frontend:
+    name: Asset build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build

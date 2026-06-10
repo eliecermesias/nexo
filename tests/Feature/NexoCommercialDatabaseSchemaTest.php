@@ -43,6 +43,7 @@ class NexoCommercialDatabaseSchemaTest extends TestCase
             'payments',
             'document_templates',
             'document_template_versions',
+            'quotation_settings',
             'collection_account_attachments',
             'invoice_attachments',
         ];
@@ -51,6 +52,8 @@ class NexoCommercialDatabaseSchemaTest extends TestCase
             $this->assertTrue(Schema::hasTable($table), "Missing table: {$table}");
             $this->assertTrue(Schema::hasColumn($table, 'Id'), "Missing Id column on table: {$table}");
         }
+
+        $this->assertTrue(Schema::hasColumn('quotations', 'document_template_versions_Id'));
     }
 
     public function test_catalog_seeders_create_requested_banks_and_currencies(): void

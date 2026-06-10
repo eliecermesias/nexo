@@ -4,6 +4,12 @@
         @include('partials.head')
     </head>
     <body class="relative min-h-screen overflow-x-hidden bg-[linear-gradient(135deg,#0B1D3A_0%,#08244D_55%,#06364B_100%)] text-white antialiased">
+        @php
+            $resolveMenuUrl = static fn (string $url): string => str($url)->startsWith('route:')
+                ? route(str($url)->after('route:')->toString())
+                : $url;
+        @endphp
+
         <div class="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(rgba(14,165,233,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,194,199,0.035)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
         <div class="pointer-events-none fixed -right-1/4 -top-1/4 h-1/2 w-1/2 rounded-full bg-[#00C2C7]/20 blur-[120px]"></div>
         <div class="pointer-events-none fixed -bottom-1/4 -left-1/4 h-1/2 w-1/2 rounded-full bg-[#0EA5E9]/20 blur-[120px]"></div>
@@ -42,13 +48,13 @@
             <flux:navlist variant="outline" class="px-2 text-gray-300">
                 @foreach ($menu as $item)
                     @if ($item['children']->isEmpty())
-                        <flux:navlist.item :icon="$item['icon']" :href="$item['url']" :current="request()->routeIs($item['current'])" class="text-sky-100/80 hover:bg-[#00C2C7]/10 hover:text-white data-current:bg-[#0EA5E9]/16 data-current:text-white">
+                        <flux:navlist.item :icon="$item['icon']" :href="$resolveMenuUrl($item['url'])" :current="request()->routeIs($item['current'])" class="text-sky-100/80 hover:bg-[#00C2C7]/10 hover:text-white data-current:bg-[#0EA5E9]/16 data-current:text-white" wire:navigate>
                             {{ $item['name'] }}
                         </flux:navlist.item>
                     @else
                         <flux:navlist.group expandable :expanded="false" :heading="$item['name']" class="lg:grid text-sky-100/80 [&_[data-flux-navlist-item]]:text-sky-100/80 [&_[data-flux-navlist-item]]:hover:bg-[#00C2C7]/10 [&_[data-flux-navlist-item]]:hover:text-white [&_[data-flux-navlist-item][data-current]]:bg-[#0EA5E9]/16 [&_[data-flux-navlist-item][data-current]]:text-white">
                             @foreach ($item['children'] as $child)
-                                <flux:navlist.item :icon="$child['icon']" :href="$child['url']" class="text-sky-100/80 hover:bg-[#00C2C7]/10 hover:text-white data-current:bg-[#0EA5E9]/16 data-current:text-white">
+                                <flux:navlist.item :icon="$child['icon']" :href="$resolveMenuUrl($child['url'])" :current="request()->routeIs($child['current'])" class="text-sky-100/80 hover:bg-[#00C2C7]/10 hover:text-white data-current:bg-[#0EA5E9]/16 data-current:text-white" wire:navigate>
                                     {{ $child['name'] }}
                                 </flux:navlist.item>
                             @endforeach

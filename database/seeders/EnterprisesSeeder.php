@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Country;
 use App\Models\DocumentType;
 use App\Models\Enterprise;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class EnterprisesSeeder extends Seeder
@@ -13,6 +14,7 @@ class EnterprisesSeeder extends Seeder
     {
         $nitDocumentType = DocumentType::query()->where('code', 'nit')->firstOrFail();
         $country = Country::query()->where('code', 'CO')->firstOrFail();
+        $owner = User::query()->firstOrFail();
 
         $enterprises = [
             [
@@ -34,6 +36,9 @@ class EnterprisesSeeder extends Seeder
                     'document_number' => $enterprise['document_number'],
                 ],
                 $enterprise + [
+                    'team_id' => $owner->currentTeam?->id,
+                    'created_by' => $owner->getKey(),
+                    'updated_by' => $owner->getKey(),
                     'document_types_Id' => $nitDocumentType->getKey(),
                     'country' => 'Colombia',
                     'countries_Id' => $country->getKey(),

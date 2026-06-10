@@ -2,14 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Contact extends Model
 {
+    use HasFactory;
+
     protected $primaryKey = 'Id';
 
     protected $fillable = [
+        'team_id',
+        'created_by',
+        'updated_by',
         'parties_Id',
         'name',
         'position',

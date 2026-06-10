@@ -4,21 +4,24 @@ namespace Tests\Feature;
 
 use App\Models\Menu;
 use Database\Seeders\MenuSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\App;
 use ReflectionClass;
 use Tests\TestCase;
 
 class MenuSeederTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_menu_seeder_defines_the_proposed_menu_tree_with_available_heroicons(): void
     {
         $menus = $this->seederMenus();
         $flattenedMenus = $this->flattenMenus($menus);
 
-        $this->assertSame(7, count($menus));
-        $this->assertSame(32, count($flattenedMenus));
+        $this->assertSame(8, count($menus));
+        $this->assertSame(47, count($flattenedMenus));
         $this->assertSame(
-            ['Dashboard', 'Commercial', 'Customers', 'Catalog', 'Payments Setup', 'Documents', 'Settings'],
+            ['Dashboard', 'Commercial', 'Customers', 'Catalog', 'Compliance', 'Payments Setup', 'Documents', 'Settings'],
             array_column($menus, 'name'),
         );
 
@@ -31,12 +34,23 @@ class MenuSeederTest extends TestCase
             ['Quotations', 'Proposals', 'Collection Accounts', 'Invoices', 'Payments'],
             array_column($commercial['children'], 'name'),
         );
+        $this->assertSame(
+            'route:quotations.index',
+            collect($commercial['children'])->firstWhere('name', 'Quotations')['url'],
+        );
+
+        $compliance = collect($menus)->firstWhere('name', 'Compliance');
+
+        $this->assertSame(
+            ['Compliance Matrices', 'Compliance Requirements', 'Uploaded Documents', 'Validation Results'],
+            array_column($compliance['children'], 'name'),
+        );
 
         $availableIcons = $this->availableFluxIcons();
 
         foreach ($flattenedMenus as $menu) {
             $this->assertContains($menu['icon'], $availableIcons);
-            $this->assertSame('#', $menu['url']);
+            $this->assertTrue($menu['url'] === '#' || str($menu['url'])->startsWith('route:'));
         }
     }
 
@@ -49,6 +63,52 @@ class MenuSeederTest extends TestCase
 
         $this->assertSame('Comercial', $menu->name);
         $this->assertSame('Commercial', $menu->getRawOriginal('name'));
+    }
+
+    public function test_menu_seeder_synchronizes_existing_records_and_removes_stale_entries(): void
+    {
+        $commercial = Menu::query()->create([
+            'name' => 'Commercial',
+            'icon' => 'home',
+            'url' => '/legacy',
+            'current' => 'legacy.*',
+            'priority' => 999,
+        ]);
+
+        $staleChild = Menu::query()->create([
+            'menu_id' => $commercial->id,
+            'name' => 'Legacy Child',
+            'icon' => 'home',
+            'url' => '/legacy-child',
+            'current' => 'legacy-child.*',
+            'priority' => 999,
+        ]);
+
+        $staleRoot = Menu::query()->create([
+            'name' => 'Legacy Root',
+            'icon' => 'home',
+            'url' => '/legacy-root',
+            'current' => 'legacy-root.*',
+            'priority' => 999,
+        ]);
+
+        $this->seed(MenuSeeder::class);
+
+        $commercial->refresh();
+
+        $this->assertSame('briefcase', $commercial->icon);
+        $this->assertSame('#', $commercial->url);
+        $this->assertSame('commercial.*', $commercial->current);
+        $this->assertSame(20, $commercial->priority);
+        $this->assertDatabaseHas('menus', [
+            'menu_id' => $commercial->id,
+            'name' => 'Quotations',
+            'url' => 'route:quotations.index',
+            'current' => 'quotations.*',
+        ]);
+        $this->assertDatabaseMissing('menus', ['id' => $staleChild->id]);
+        $this->assertDatabaseMissing('menus', ['id' => $staleRoot->id]);
+        $this->assertSame(47, Menu::query()->count());
     }
 
     /**

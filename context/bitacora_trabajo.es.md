@@ -1027,3 +1027,57 @@ En esta sesión no se ejecutaron pruebas automatizadas porque los cambios fueron
 - Existencia de archivos creados en `context/spec`.
 - Tamaño de los documentos generados.
 - Estado Git de los archivos documentales.
+
+## Sesión 2026-05-15: Arranque de CI/CD
+
+Se inició la configuración de CI/CD para Nexo, teniendo en cuenta que todavía no existe un ambiente de producción definido. La decisión técnica fue empezar por integración continua y dejar entrega/despliegue continuo como un paso manual y explícitamente pendiente.
+
+### Cambios realizados
+
+Se reemplazaron los workflows separados:
+
+- `.github/workflows/lint.yml`
+- `.github/workflows/tests.yml`
+
+Por un workflow central:
+
+- `.github/workflows/ci.yml`
+
+El nuevo CI se ejecuta en `push`, `pull_request` y `workflow_dispatch` sobre las ramas `develop`, `main`, `master` y `workos`.
+
+El pipeline quedó dividido en dos trabajos:
+
+- `PHP checks`: instala PHP 8.3, configura Composer, instala dependencias, prepara `.env`, genera `APP_KEY`, ejecuta Pint en modo verificación y corre la suite de pruebas con `php artisan test --compact`.
+- `Asset build`: instala Node 22, usa `npm ci` y valida el build de frontend con `npm run build`.
+
+También se agregó:
+
+- `.github/workflows/deploy.yml`
+
+Este workflow de despliegue sólo se puede ejecutar manualmente y por ahora no despliega. Su propósito es dejar visible que producción todavía no está configurado y que falta definir hosting, secretos y comandos reales de despliegue.
+
+### Ajustes relacionados
+
+Se ajustó `database/seeders/MenuSeeder.php` para no resolver rutas que dependen de `current_team` durante seeders o tests. En particular, `Dashboard` y `Enterprises` quedaron temporalmente como enlaces `#`, alineados con el contrato actual de `MenuSeederTest`.
+
+También se ejecutó Pint y se aplicó formato mecánico a archivos PHP e idioma que ya estaban fuera del estándar del proyecto. No se cambió lógica en esos archivos.
+
+### Verificaciones ejecutadas
+
+Se verificó:
+
+- Sintaxis YAML de los workflows con parser local de Python.
+- `vendor/bin/pint --test --format=github`: exitoso.
+- `npm run build`: exitoso.
+- `php artisan test --compact tests/Feature/MenuSeederTest.php`: exitoso.
+
+La suite completa con `php artisan test --compact` no pudo completarse localmente porque la instalación actual de PHP no tiene habilitados `pdo_sqlite`/`sqlite3`. El workflow de GitHub Actions sí instala esas extensiones, por lo que el CI queda preparado para correr los tests con SQLite en memoria según `phpunit.xml`.
+
+### Pendientes
+
+- Configurar los secretos de Flux en GitHub si el repositorio necesita instalar dependencias privadas:
+  - `FLUX_USERNAME`
+  - `FLUX_LICENSE_KEY`
+- Definir ambiente de producción: Laravel Cloud, Forge, VPS u otro proveedor.
+- Convertir `deploy.yml` en un despliegue real cuando existan servidor, variables, secretos y estrategia de rollback.
+- Revisar si las ramas objetivo del CI deben quedarse como `develop`, `main`, `master`, `workos` o reducirse a las ramas activas del flujo real.

@@ -12,9 +12,13 @@ class MenuSeeder extends Seeder
      */
     public function run(): void
     {
+        $rootMenuIds = [];
+
         foreach ($this->menus() as $menu) {
-            $this->upsertMenu($menu);
+            $rootMenuIds[] = $this->upsertMenu($menu)->id;
         }
+
+        $this->deleteMissingMenus(null, $rootMenuIds);
     }
 
     /**
@@ -39,11 +43,46 @@ class MenuSeeder extends Seeder
             $storedMenu->save();
         }
 
+        $childMenuIds = [];
+
         foreach ($children as $child) {
-            $this->upsertMenu($child, $storedMenu);
+            $childMenuIds[] = $this->upsertMenu($child, $storedMenu)->id;
         }
 
+        $this->deleteMissingMenus($storedMenu, $childMenuIds);
+
         return $storedMenu;
+    }
+
+    /**
+     * @param  array<int, int>  $keptMenuIds
+     */
+    private function deleteMissingMenus(?Menu $parent, array $keptMenuIds): void
+    {
+        $existingMenus = Menu::query()
+            ->when(
+                $parent instanceof Menu,
+                fn ($query) => $query->where('menu_id', $parent->id),
+                fn ($query) => $query->whereNull('menu_id'),
+            )
+            ->get();
+
+        foreach ($existingMenus as $existingMenu) {
+            if (in_array($existingMenu->id, $keptMenuIds, true)) {
+                continue;
+            }
+
+            $this->deleteMenuBranch($existingMenu);
+        }
+    }
+
+    private function deleteMenuBranch(Menu $menu): void
+    {
+        foreach ($menu->children()->get() as $child) {
+            $this->deleteMenuBranch($child);
+        }
+
+        $menu->delete();
     }
 
     /**
@@ -55,7 +94,7 @@ class MenuSeeder extends Seeder
             [
                 'name' => 'Dashboard',
                 'icon' => 'home',
-                'url' => route('dashboard'),
+                'url' => '#',
                 'current' => 'dashboard',
                 'priority' => 10,
             ],
@@ -69,7 +108,7 @@ class MenuSeeder extends Seeder
                     [
                         'name' => 'Quotations',
                         'icon' => 'document-text',
-                        'url' => '#',
+                        'url' => 'route:quotations.index',
                         'current' => 'quotations.*',
                         'priority' => 21,
                     ],
@@ -113,23 +152,30 @@ class MenuSeeder extends Seeder
                     [
                         'name' => 'Enterprises',
                         'icon' => 'building-office',
-                        'url' => route('enterprises.index'),
+                        'url' => '#',
                         'current' => 'enterprises.*',
                         'priority' => 31,
+                    ],
+                    [
+                        'name' => 'Parties',
+                        'icon' => 'identification',
+                        'url' => '#',
+                        'current' => 'parties.*',
+                        'priority' => 32,
+                    ],
+                    [
+                        'name' => 'Contacts',
+                        'icon' => 'chat-bubble-left-right',
+                        'url' => '#',
+                        'current' => 'contacts.*',
+                        'priority' => 33,
                     ],
                     [
                         'name' => 'People',
                         'icon' => 'user',
                         'url' => '#',
                         'current' => 'people.*',
-                        'priority' => 32,
-                    ],
-                    [
-                        'name' => 'Contacts',
-                        'icon' => 'identification',
-                        'url' => '#',
-                        'current' => 'contacts.*',
-                        'priority' => 33,
+                        'priority' => 34,
                     ],
                 ],
             ],
@@ -155,11 +201,62 @@ class MenuSeeder extends Seeder
                         'priority' => 42,
                     ],
                     [
+                        'name' => 'Service Rates',
+                        'icon' => 'currency-dollar',
+                        'url' => '#',
+                        'current' => 'service-rates.*',
+                        'priority' => 43,
+                    ],
+                    [
                         'name' => 'Taxes',
                         'icon' => 'receipt-percent',
                         'url' => '#',
                         'current' => 'taxes.*',
-                        'priority' => 43,
+                        'priority' => 44,
+                    ],
+                    [
+                        'name' => 'Retention Rates',
+                        'icon' => 'scale',
+                        'url' => '#',
+                        'current' => 'retention-rates.*',
+                        'priority' => 45,
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Compliance',
+                'icon' => 'shield-check',
+                'url' => '#',
+                'current' => 'compliance.*',
+                'priority' => 50,
+                'children' => [
+                    [
+                        'name' => 'Compliance Matrices',
+                        'icon' => 'table-cells',
+                        'url' => '#',
+                        'current' => 'compliance-matrices.*',
+                        'priority' => 51,
+                    ],
+                    [
+                        'name' => 'Compliance Requirements',
+                        'icon' => 'clipboard-document-check',
+                        'url' => '#',
+                        'current' => 'compliance-requirements.*',
+                        'priority' => 52,
+                    ],
+                    [
+                        'name' => 'Uploaded Documents',
+                        'icon' => 'document-arrow-up',
+                        'url' => '#',
+                        'current' => 'uploaded-documents.*',
+                        'priority' => 53,
+                    ],
+                    [
+                        'name' => 'Validation Results',
+                        'icon' => 'check-badge',
+                        'url' => '#',
+                        'current' => 'compliance-validation-results.*',
+                        'priority' => 54,
                     ],
                 ],
             ],
@@ -168,35 +265,35 @@ class MenuSeeder extends Seeder
                 'icon' => 'banknotes',
                 'url' => '#',
                 'current' => 'payments-setup.*',
-                'priority' => 50,
+                'priority' => 60,
                 'children' => [
                     [
                         'name' => 'Payment Methods',
                         'icon' => 'credit-card',
                         'url' => '#',
                         'current' => 'payment-methods.*',
-                        'priority' => 51,
+                        'priority' => 61,
                     ],
                     [
                         'name' => 'Banks',
                         'icon' => 'building-library',
                         'url' => '#',
                         'current' => 'banks.*',
-                        'priority' => 52,
+                        'priority' => 62,
                     ],
                     [
                         'name' => 'Bank Accounts',
                         'icon' => 'wallet',
                         'url' => '#',
                         'current' => 'bank-accounts.*',
-                        'priority' => 53,
+                        'priority' => 63,
                     ],
                     [
                         'name' => 'Payment Destinations',
                         'icon' => 'map-pin',
                         'url' => '#',
                         'current' => 'payment-destinations.*',
-                        'priority' => 54,
+                        'priority' => 64,
                     ],
                 ],
             ],
@@ -205,35 +302,49 @@ class MenuSeeder extends Seeder
                 'icon' => 'document-duplicate',
                 'url' => '#',
                 'current' => 'documents.*',
-                'priority' => 60,
+                'priority' => 70,
                 'children' => [
                     [
                         'name' => 'Templates',
                         'icon' => 'document-duplicate',
                         'url' => '#',
                         'current' => 'document-templates.*',
-                        'priority' => 61,
+                        'priority' => 71,
                     ],
                     [
                         'name' => 'Template Versions',
                         'icon' => 'clock',
                         'url' => '#',
                         'current' => 'document-template-versions.*',
-                        'priority' => 62,
+                        'priority' => 72,
+                    ],
+                    [
+                        'name' => 'Generated Documents',
+                        'icon' => 'document-check',
+                        'url' => '#',
+                        'current' => 'generated-documents.*',
+                        'priority' => 73,
+                    ],
+                    [
+                        'name' => 'Document Packages',
+                        'icon' => 'archive-box',
+                        'url' => '#',
+                        'current' => 'document-packages.*',
+                        'priority' => 74,
                     ],
                     [
                         'name' => 'Collection Account Attachments',
                         'icon' => 'paper-clip',
                         'url' => '#',
                         'current' => 'collection-account-attachments.*',
-                        'priority' => 63,
+                        'priority' => 75,
                     ],
                     [
                         'name' => 'Invoice Attachments',
                         'icon' => 'paper-clip',
                         'url' => '#',
                         'current' => 'invoice-attachments.*',
-                        'priority' => 64,
+                        'priority' => 76,
                     ],
                 ],
             ],
@@ -273,18 +384,53 @@ class MenuSeeder extends Seeder
                         'priority' => 94,
                     ],
                     [
+                        'name' => 'Locations',
+                        'icon' => 'globe-alt',
+                        'url' => '#',
+                        'current' => 'locations.*',
+                        'priority' => 95,
+                    ],
+                    [
+                        'name' => 'Internal Sequences',
+                        'icon' => 'hashtag',
+                        'url' => '#',
+                        'current' => 'internal-sequences.*',
+                        'priority' => 96,
+                    ],
+                    [
+                        'name' => 'External Invoice Numbers',
+                        'icon' => 'queue-list',
+                        'url' => '#',
+                        'current' => 'external-invoice-numbers.*',
+                        'priority' => 97,
+                    ],
+                    [
                         'name' => 'Teams',
                         'icon' => 'user-group',
                         'url' => '#',
                         'current' => 'teams.*',
-                        'priority' => 95,
+                        'priority' => 98,
+                    ],
+                    [
+                        'name' => 'Activity Logs',
+                        'icon' => 'clipboard-document-list',
+                        'url' => '#',
+                        'current' => 'activity-logs.*',
+                        'priority' => 99,
+                    ],
+                    [
+                        'name' => 'Audit Logs',
+                        'icon' => 'archive-box',
+                        'url' => '#',
+                        'current' => 'audit-logs.*',
+                        'priority' => 100,
                     ],
                     [
                         'name' => 'Menus',
                         'icon' => 'bars-3',
                         'url' => '#',
                         'current' => 'menus.*',
-                        'priority' => 96,
+                        'priority' => 101,
                     ],
                 ],
             ],

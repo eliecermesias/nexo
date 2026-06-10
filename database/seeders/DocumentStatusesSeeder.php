@@ -10,6 +10,7 @@ class DocumentStatusesSeeder extends Seeder
     public function run(): void
     {
         $statuses = [
+            ['code' => 'created', 'name' => 'Created', 'description' => 'Document has been created and is pending commercial work.'],
             ['code' => 'draft', 'name' => 'Draft', 'description' => 'Document is being edited.'],
             ['code' => 'sent', 'name' => 'Sent', 'description' => 'Document was sent to the customer.'],
             ['code' => 'approved', 'name' => 'Approved', 'description' => 'Document was approved.'],

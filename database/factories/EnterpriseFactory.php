@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Country;
 use App\Models\DocumentType;
 use App\Models\Enterprise;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -29,7 +30,12 @@ class EnterpriseFactory extends Factory
             ['name' => 'Colombia', 'is_active' => true],
         );
 
+        $owner = User::query()->first() ?? User::factory()->create();
+
         return [
+            'team_id' => $owner->currentTeam?->id,
+            'created_by' => $owner->getKey(),
+            'updated_by' => $owner->getKey(),
             'document_types_Id' => $documentType->getKey(),
             'document_number' => fake()->unique()->numerify('9########'),
             'legal_name' => fake()->unique()->company(),

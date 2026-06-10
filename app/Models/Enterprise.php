@@ -14,6 +14,9 @@ class Enterprise extends Model
     protected $primaryKey = 'Id';
 
     protected $fillable = [
+        'team_id',
+        'created_by',
+        'updated_by',
         'document_types_Id',
         'document_number',
         'legal_name',
