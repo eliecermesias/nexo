@@ -37,6 +37,7 @@ class EnterpriseIndexTest extends TestCase
 
         $response
             ->assertOk()
+            ->assertSee('Directorio de empresas')
             ->assertSee('Listado de empresas')
             ->assertSee('Nueva empresa')
             ->assertSee('Aurum Comercial SAS')
@@ -45,7 +46,6 @@ class EnterpriseIndexTest extends TestCase
             ->assertSee(route('enterprises.create'), false)
             ->assertSee(route('enterprises.show', $enterprise), false)
             ->assertSee(route('enterprises.edit', $enterprise), false)
-            ->assertDontSee('Directorio comercial')
             ->assertDontSee('btn-yellow', false);
     }
 
@@ -58,6 +58,28 @@ class EnterpriseIndexTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('No hay empresas registradas');
+    }
+
+    public function test_enterprise_directory_can_be_filtered(): void
+    {
+        Enterprise::factory()->create([
+            'legal_name' => 'Aurum Comercial SAS',
+            'document_number' => '900000111',
+        ]);
+
+        Enterprise::factory()->create([
+            'legal_name' => 'Boreal Tecnologia SAS',
+            'document_number' => '900000222',
+        ]);
+
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->get(route('enterprises.index', ['search' => 'Aurum']));
+
+        $response
+            ->assertOk()
+            ->assertSee('Aurum Comercial SAS')
+            ->assertDontSee('Boreal Tecnologia SAS');
     }
 
     public function test_enterprise_directory_is_paginated(): void

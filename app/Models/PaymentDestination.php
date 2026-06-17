@@ -2,15 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PaymentDestination extends Model
 {
+    use HasFactory;
+
     protected $primaryKey = 'Id';
 
     protected $fillable = [
+        'team_id',
+        'created_by',
+        'updated_by',
         'enterprises_Id',
         'payment_methods_Id',
         'bank_accounts_Id',

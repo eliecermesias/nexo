@@ -178,8 +178,9 @@ class QuotationDashboardTest extends TestCase
             ->call('openItemsModal', $quotation->Id)
             ->set('selectedServiceIds', [(string) $context['service']->Id])
             ->set('items.0.quantity', 2)
+            ->set('items.0.discount_type', 'percent')
             ->set('items.0.discount_rate', 10)
-            ->set('items.0.taxes_Id', (string) $context['tax']->Id)
+            ->set('selectedTaxIds', [(string) $context['tax']->Id])
             ->call('saveItems')
             ->assertHasNoErrors();
 
@@ -193,6 +194,49 @@ class QuotationDashboardTest extends TestCase
             'quotations_Id' => $quotation->Id,
             'services_Id' => $context['service']->Id,
             'tax_rate' => 19,
+        ]);
+    }
+
+    public function test_users_can_register_discount_amounts_with_descriptions(): void
+    {
+        $user = User::factory()->create();
+        $context = $this->quotationContext($user);
+
+        $quotation = Quotation::factory()->create([
+            'team_id' => $user->currentTeam->id,
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+            'enterprises_Id' => $context['enterprise']->Id,
+            'parties_Id' => $context['party']->Id,
+            'contacts_Id' => $context['contact']->Id,
+            'currencies_Id' => $context['currency']->Id,
+            'document_statuses_Id' => $context['createdStatus']->Id,
+            'document_template_versions_Id' => $context['templateVersion']->Id,
+            'number' => 'DISC-0001',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test('pages::quotations.index')
+            ->call('openItemsModal', $quotation->Id)
+            ->call('setServiceSelection', (string) $context['service']->Id, true)
+            ->set('items.0.quantity', 2)
+            ->call('saveItems')
+            ->assertHasNoErrors()
+            ->call('openDiscountsModal', $quotation->Id)
+            ->set('items.0.discount_type', 'amount')
+            ->set('items.0.discount_amount', 25000)
+            ->set('items.0.discount_description', 'Descuento comercial por volumen')
+            ->call('saveItems')
+            ->assertHasNoErrors();
+
+        $quotation->refresh();
+
+        $this->assertSame('300000.00', (string) $quotation->subtotal);
+        $this->assertSame('25000.00', (string) $quotation->discount_total);
+        $this->assertDatabaseHas('quotation_items', [
+            'quotations_Id' => $quotation->Id,
+            'discount_amount' => 25000,
+            'discount_description' => 'Descuento comercial por volumen',
         ]);
     }
 
@@ -223,6 +267,110 @@ class QuotationDashboardTest extends TestCase
         $quotation->refresh();
 
         $this->assertSame($context['sentStatus']->Id, $quotation->document_statuses_Id);
+    }
+
+    public function test_users_can_switch_language_without_signing_out(): void
+    {
+        $user = User::factory()->create();
+        $context = $this->quotationContext($user);
+
+        Quotation::factory()->create([
+            'team_id' => $user->currentTeam->id,
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+            'enterprises_Id' => $context['enterprise']->Id,
+            'parties_Id' => $context['party']->Id,
+            'contacts_Id' => $context['contact']->Id,
+            'currencies_Id' => $context['currency']->Id,
+            'document_statuses_Id' => $context['sentStatus']->Id,
+            'document_template_versions_Id' => $context['templateVersion']->Id,
+            'number' => 'LANG-0001',
+        ]);
+
+        $this
+            ->actingAs($user)
+            ->post(route('locale.update'), ['locale' => 'es'])
+            ->assertRedirect()
+            ->assertSessionHas('locale', 'es');
+
+        $this
+            ->actingAs($user)
+            ->withSession(['locale' => 'es'])
+            ->get(route('quotations.index', ['current_team' => $user->currentTeam]))
+            ->assertOk()
+            ->assertSee('Enviada');
+    }
+
+    public function test_users_can_manage_bulk_actions_terms_send_and_delete_from_the_grid(): void
+    {
+        $user = User::factory()->create();
+        $context = $this->quotationContext($user);
+
+        $firstQuotation = Quotation::factory()->create([
+            'team_id' => $user->currentTeam->id,
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+            'enterprises_Id' => $context['enterprise']->Id,
+            'parties_Id' => $context['party']->Id,
+            'contacts_Id' => $context['contact']->Id,
+            'currencies_Id' => $context['currency']->Id,
+            'document_statuses_Id' => $context['createdStatus']->Id,
+            'document_template_versions_Id' => $context['templateVersion']->Id,
+            'number' => 'BULK-0001',
+        ]);
+
+        $secondQuotation = Quotation::factory()->create([
+            'team_id' => $user->currentTeam->id,
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+            'enterprises_Id' => $context['enterprise']->Id,
+            'parties_Id' => $context['otherParty']->Id,
+            'contacts_Id' => $context['otherContact']->Id,
+            'currencies_Id' => $context['currency']->Id,
+            'document_statuses_Id' => $context['createdStatus']->Id,
+            'document_template_versions_Id' => $context['templateVersion']->Id,
+            'number' => 'BULK-0002',
+        ]);
+
+        Livewire::actingAs($user)
+            ->test('pages::quotations.index')
+            ->set('selectedQuotationIds', [(string) $firstQuotation->Id, (string) $secondQuotation->Id])
+            ->call('openBulkStatusModal')
+            ->set('bulkStatusForm.document_statuses_Id', (string) $context['sentStatus']->Id)
+            ->call('updateBulkStatus')
+            ->assertHasNoErrors()
+            ->assertSet('selectedQuotationIds', []);
+
+        $this->assertSame($context['sentStatus']->Id, $firstQuotation->refresh()->document_statuses_Id);
+        $this->assertSame($context['sentStatus']->Id, $secondQuotation->refresh()->document_statuses_Id);
+
+        Livewire::actingAs($user)
+            ->test('pages::quotations.index')
+            ->call('openTermsModal', $firstQuotation->Id)
+            ->call('applyTermPreset', 'Pago anticipado contra aprobacion.')
+            ->set('termsForm.note', 'Enviar copia al area financiera.')
+            ->call('saveTerms')
+            ->assertHasNoErrors();
+
+        $this->assertSame('Pago anticipado contra aprobacion.', $firstQuotation->refresh()->term);
+        $this->assertSame('Enviar copia al area financiera.', $firstQuotation->note);
+
+        Livewire::actingAs($user)
+            ->test('pages::quotations.index')
+            ->call('sendQuotation', $firstQuotation->Id)
+            ->assertHasNoErrors();
+
+        $this->assertSame($context['sentStatus']->Id, $firstQuotation->refresh()->document_statuses_Id);
+
+        Livewire::actingAs($user)
+            ->test('pages::quotations.index')
+            ->set('selectedQuotationIds', [(string) $firstQuotation->Id, (string) $secondQuotation->Id])
+            ->call('deleteSelectedQuotations')
+            ->assertHasNoErrors()
+            ->assertSet('selectedQuotationIds', []);
+
+        $this->assertModelMissing($firstQuotation);
+        $this->assertModelMissing($secondQuotation);
     }
 
     /**

@@ -19,7 +19,7 @@ class MenuSeederTest extends TestCase
         $flattenedMenus = $this->flattenMenus($menus);
 
         $this->assertSame(8, count($menus));
-        $this->assertSame(47, count($flattenedMenus));
+        $this->assertSame(50, count($flattenedMenus));
         $this->assertSame(
             ['Dashboard', 'Commercial', 'Customers', 'Catalog', 'Compliance', 'Payments Setup', 'Documents', 'Settings'],
             array_column($menus, 'name'),
@@ -31,7 +31,7 @@ class MenuSeederTest extends TestCase
         $this->assertSame('#', $commercial['url']);
         $this->assertSame(20, $commercial['priority']);
         $this->assertSame(
-            ['Quotations', 'Proposals', 'Collection Accounts', 'Invoices', 'Payments'],
+            ['Quotations', 'Proposals', 'Collection Accounts', 'Invoices', 'Payment Methods', 'Banks', 'Bank Accounts', 'Payment Destinations'],
             array_column($commercial['children'], 'name'),
         );
         $this->assertSame(
@@ -108,7 +108,7 @@ class MenuSeederTest extends TestCase
         ]);
         $this->assertDatabaseMissing('menus', ['id' => $staleChild->id]);
         $this->assertDatabaseMissing('menus', ['id' => $staleRoot->id]);
-        $this->assertSame(47, Menu::query()->count());
+        $this->assertSame(50, Menu::query()->count());
     }
 
     /**

@@ -75,21 +75,31 @@
                 </flux:sidebar.item>
             </flux:sidebar.nav>
 
-            <div class="border-t border-white/10 p-2">
-                <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
-            </div>
         </flux:sidebar>
 
-        <flux:header class="border-b border-white/10 bg-[#0B1D3A]/86 text-white shadow-[0_0_48px_-20px_rgba(0,194,199,0.7)] backdrop-blur-xl lg:hidden">
+        <flux:header class="border-b border-slate-200/70 bg-slate-100/92 text-slate-900 shadow-[0_18px_42px_-32px_rgba(11,29,58,0.55)] backdrop-blur-xl dark:border-white/10 dark:bg-[#0B1D3A]/86 dark:text-white">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
 
-            <flux:dropdown position="top" align="end">
-                <flux:profile
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevron-down"
-                />
+            <form method="POST" action="{{ route('locale.update') }}" class="hidden items-center gap-2 sm:flex">
+                @csrf
+                <select name="locale" onchange="this.form.submit()" aria-label="{{ __('Language') }}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm dark:border-white/10 dark:bg-slate-900 dark:text-slate-100">
+                    <option value="es" @selected(app()->getLocale() === 'es')>{{ __('Spanish') }}</option>
+                    <option value="en" @selected(app()->getLocale() === 'en')>{{ __('English') }}</option>
+                </select>
+            </form>
+
+            <flux:dropdown position="bottom" align="end">
+                <flux:button variant="ghost" class="gap-2">
+                    <flux:avatar
+                        :name="auth()->user()->name"
+                        :initials="auth()->user()->initials()"
+                        size="sm"
+                    />
+                    <span class="hidden max-w-36 truncate text-sm font-semibold md:block">{{ auth()->user()->name }}</span>
+                    <flux:icon name="chevron-down" class="size-4" />
+                </flux:button>
 
                 <flux:menu>
                     <flux:menu.radio.group>
@@ -111,10 +121,29 @@
                     <flux:menu.separator />
 
                     <flux:menu.radio.group>
-                        <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
-                            {{ __('Settings') }}
+                        <flux:menu.item :href="route('profile.edit')" icon="user" wire:navigate>
+                            {{ __('Profile') }}
+                        </flux:menu.item>
+                        <flux:menu.item :href="route('security.edit')" icon="shield-check" wire:navigate>
+                            {{ __('Security') }}
+                        </flux:menu.item>
+                        <flux:menu.item :href="route('teams.index')" icon="users" wire:navigate>
+                            {{ __('Teams') }}
+                        </flux:menu.item>
+                        <flux:menu.item :href="route('appearance.edit')" icon="swatch" wire:navigate>
+                            {{ __('Appearance') }}
                         </flux:menu.item>
                     </flux:menu.radio.group>
+
+                    <flux:menu.separator class="sm:hidden" />
+
+                    <form method="POST" action="{{ route('locale.update') }}" class="px-2 py-1 sm:hidden">
+                        @csrf
+                        <select name="locale" onchange="this.form.submit()" aria-label="{{ __('Language') }}" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 dark:border-white/10 dark:bg-slate-900 dark:text-slate-100">
+                            <option value="es" @selected(app()->getLocale() === 'es')>{{ __('Spanish') }}</option>
+                            <option value="en" @selected(app()->getLocale() === 'en')>{{ __('English') }}</option>
+                        </select>
+                    </form>
 
                     <flux:menu.separator />
 

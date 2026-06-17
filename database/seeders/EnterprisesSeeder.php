@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Country;
 use App\Models\DocumentType;
 use App\Models\Enterprise;
+use App\Models\State;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -14,6 +15,12 @@ class EnterprisesSeeder extends Seeder
     {
         $nitDocumentType = DocumentType::query()->where('code', 'nit')->firstOrFail();
         $country = Country::query()->where('code', 'CO')->firstOrFail();
+        $state = State::query()
+            ->where('countries_Id', $country->getKey())
+            ->where('code', '11')
+            ->with(['cities' => fn ($query) => $query->where('code', '11001')])
+            ->first();
+        $city = $state?->cities->first();
         $owner = User::query()->firstOrFail();
 
         $enterprises = [
@@ -41,7 +48,11 @@ class EnterprisesSeeder extends Seeder
                     'updated_by' => $owner->getKey(),
                     'document_types_Id' => $nitDocumentType->getKey(),
                     'country' => 'Colombia',
+                    'state' => $state?->name,
+                    'city' => $city?->name,
                     'countries_Id' => $country->getKey(),
+                    'states_Id' => $state?->getKey(),
+                    'cities_Id' => $city?->getKey(),
                 ],
             );
         }

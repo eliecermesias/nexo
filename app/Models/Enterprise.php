@@ -72,4 +72,9 @@ class Enterprise extends Model
     {
         return $this->hasMany(DocumentTemplate::class, 'enterprises_Id', 'Id');
     }
+
+    public function quotations(): HasMany
+    {
+        return $this->hasMany(Quotation::class, 'enterprises_Id', 'Id');
+    }
 }

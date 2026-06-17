@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Country;
 use App\Models\DocumentType;
 use App\Models\Enterprise;
+use App\Models\State;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,13 +22,18 @@ class EnterpriseFactory extends Factory
     public function definition(): array
     {
         $documentType = DocumentType::query()->firstOrCreate(
-            ['code' => 'NIT'],
+            ['code' => 'nit'],
             ['name' => 'NIT', 'is_active' => true],
         );
 
         $country = Country::query()->firstOrCreate(
             ['code' => 'CO'],
             ['name' => 'Colombia', 'is_active' => true],
+        );
+
+        $state = State::query()->firstOrCreate(
+            ['countries_Id' => $country->getKey(), 'code' => '11'],
+            ['name' => 'Cundinamarca', 'is_active' => true],
         );
 
         $owner = User::query()->first() ?? User::factory()->create();
@@ -44,9 +50,10 @@ class EnterpriseFactory extends Factory
             'phone' => fake()->numerify('300#######'),
             'address' => fake()->streetAddress(),
             'city' => fake()->city(),
-            'state' => fake()->state(),
+            'state' => $state->name,
             'country' => $country->name,
             'countries_Id' => $country->getKey(),
+            'states_Id' => $state->getKey(),
             'tax_regime' => fake()->randomElement(['Responsable de IVA', 'No responsable de IVA', 'Regimen simple']),
         ];
     }

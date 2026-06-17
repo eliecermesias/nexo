@@ -39,6 +39,8 @@ class QuotationItemFactory extends Factory
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
             'discount_rate' => $discountRate,
+            'discount_amount' => $discountAmount,
+            'discount_description' => null,
             'tax_rate' => $taxRate,
             'line_total' => $lineTotal,
             'sort_order' => 1,

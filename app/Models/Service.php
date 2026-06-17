@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
@@ -19,8 +20,11 @@ class Service extends Model
         'code',
         'name',
         'description',
+        'category',
+        'pricing_type',
         'unit',
         'unit_price',
+        'currency_id',
         'is_active',
     ];
 
@@ -35,5 +39,15 @@ class Service extends Model
     public function planItems(): HasMany
     {
         return $this->hasMany(PlanItem::class, 'services_Id', 'Id');
+    }
+
+    public function serviceRates(): HasMany
+    {
+        return $this->hasMany(ServiceRate::class, 'service_id', 'Id');
+    }
+
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id', 'Id');
     }
 }

@@ -21,6 +21,8 @@ class QuotationItem extends Model
         'quantity',
         'unit_price',
         'discount_rate',
+        'discount_amount',
+        'discount_description',
         'tax_rate',
         'line_total',
         'sort_order',
@@ -32,6 +34,7 @@ class QuotationItem extends Model
             'quantity' => 'decimal:2',
             'unit_price' => 'decimal:2',
             'discount_rate' => 'decimal:4',
+            'discount_amount' => 'decimal:2',
             'tax_rate' => 'decimal:4',
             'line_total' => 'decimal:2',
         ];

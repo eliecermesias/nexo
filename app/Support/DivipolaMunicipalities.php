@@ -10,7 +10,7 @@ class DivipolaMunicipalities
 {
     public static function fromOds(?string $path = null): array
     {
-        $path ??= base_path('context/DIVIPOLA_Municipios.ods');
+        $path ??= database_path('seeders/data/DIVIPOLA_Municipios.ods');
 
         $zip = new ZipArchive;
 
