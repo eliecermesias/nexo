@@ -32,7 +32,6 @@ class AdminResourceCrudTest extends TestCase
             'banks.index' => 'Bancos',
             'bank-accounts.index' => 'Cuentas bancarias',
             'payment-destinations.index' => 'Destinos de pago',
-            'services.index' => 'Servicios',
             'plans.index' => 'Planes',
             'service-rates.index' => 'Tarifas de servicios',
             'taxes.index' => 'Impuestos',

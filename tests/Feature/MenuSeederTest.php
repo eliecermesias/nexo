@@ -39,6 +39,21 @@ class MenuSeederTest extends TestCase
             collect($commercial['children'])->firstWhere('name', 'Quotations')['url'],
         );
 
+        $customers = collect($menus)->firstWhere('name', 'Customers');
+
+        $this->assertSame(
+            'route:parties.index',
+            collect($customers['children'])->firstWhere('name', 'Parties')['url'],
+        );
+        $this->assertSame(
+            'route:contacts.index',
+            collect($customers['children'])->firstWhere('name', 'Contacts')['url'],
+        );
+        $this->assertSame(
+            'route:people.index',
+            collect($customers['children'])->firstWhere('name', 'People')['url'],
+        );
+
         $compliance = collect($menus)->firstWhere('name', 'Compliance');
 
         $this->assertSame(

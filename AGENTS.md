@@ -32,6 +32,8 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, and naming.
 - Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
 - Check for existing components to reuse before writing a new one.
+- Document numbers for quotations, proposals, and collection accounts must be generated through `App\Support\DocumentSequenceGenerator` and the `internal_sequences` table. Do not calculate document consecutives by scanning existing document numbers in controllers, Livewire components, seeders, or views.
+- `internal_sequences` stores the document type, prefix, initial value, final value, current value, number length, number format, suffix, padding, and active state. Use `sequence_histories` to audit generated numbers and associate them with the generated document.
 
 ## Verification Scripts
 

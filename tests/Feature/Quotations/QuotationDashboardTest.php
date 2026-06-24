@@ -8,6 +8,7 @@ use App\Models\DocumentStatus;
 use App\Models\DocumentTemplate;
 use App\Models\DocumentTemplateVersion;
 use App\Models\Enterprise;
+use App\Models\InternalSequence;
 use App\Models\Party;
 use App\Models\Quotation;
 use App\Models\QuotationSetting;
@@ -128,6 +129,15 @@ class QuotationDashboardTest extends TestCase
     {
         $user = User::factory()->create(['name' => 'Eliecer Mesias']);
         $context = $this->quotationContext($user);
+        InternalSequence::factory()->create([
+            'team_id' => $user->currentTeam->id,
+            'document_type' => 'quotation',
+            'prefix' => 'COT-',
+            'initial_value' => 25,
+            'current_value' => 24,
+            'number_length' => 4,
+            'padding' => 4,
+        ]);
 
         Livewire::actingAs($user)
             ->test('pages::quotations.index')
@@ -152,7 +162,12 @@ class QuotationDashboardTest extends TestCase
         $this->assertSame($context['templateVersion']->Id, $quotation->document_template_versions_Id);
         $this->assertSame($context['quotationSetting']->default_term, $quotation->term);
         $this->assertSame($context['quotationSetting']->default_note, $quotation->note);
-        $this->assertSame('EM-0001', $quotation->number);
+        $this->assertSame('COT-0025', $quotation->number);
+        $this->assertDatabaseHas('sequence_histories', [
+            'document_number' => 'COT-0025',
+            'documentable_type' => Quotation::class,
+            'documentable_id' => $quotation->getKey(),
+        ]);
     }
 
     public function test_users_can_configure_services_discounts_and_taxes_from_the_grid(): void

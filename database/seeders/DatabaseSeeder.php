@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             CurrenciesSeeder::class,
             TaxesSeeder::class,
             RetentionRatesSeeder::class,
+            InternalSequencesSeeder::class,
             ServicesSeeder::class,
             ServiceRatesSeeder::class,
             PlansSeeder::class,

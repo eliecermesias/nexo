@@ -10,6 +10,7 @@ use App\Models\Quotation;
 use App\Models\QuotationSetting;
 use App\Models\Service;
 use App\Models\Tax;
+use App\Support\DocumentSequenceGenerator;
 use Flux\Flux;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -330,8 +331,18 @@ new #[Title('Cotizaciones')] class extends Component
                 $quotation = Quotation::query()->findOrFail($this->selectedQuotationId);
                 $quotation->update($payload);
             } else {
+                $allocation = app(DocumentSequenceGenerator::class)->next(
+                    'quotation',
+                    Auth::user()?->currentTeam?->id,
+                );
+
+                $payload['number'] = $allocation['number'];
                 $payload['created_by'] = Auth::id();
                 $quotation = Quotation::query()->create($payload);
+
+                $allocation['history']->documentable()->associate($quotation);
+                $allocation['history']->save();
+
                 $this->selectedQuotationId = $quotation->Id;
             }
         });
@@ -1077,17 +1088,7 @@ new #[Title('Cotizaciones')] class extends Component
 
     private function generateNextQuotationNumber(): string
     {
-        $prefix = strtoupper(trim(Auth::user()?->initials() ?? 'CT')).'-';
-        $lastValue = Quotation::query()
-            ->where('team_id', $this->currentTeamId())
-            ->where('number', 'like', $prefix.'%')
-            ->pluck('number')
-            ->map(function (string $number) use ($prefix): int {
-                return (int) str($number)->after($prefix)->toString();
-            })
-            ->max() ?? 0;
-
-        return $prefix.str_pad((string) ($lastValue + 1), 4, '0', STR_PAD_LEFT);
+        return app(DocumentSequenceGenerator::class)->preview('quotation', $this->currentTeamId());
     }
 
     private function syncSelectedServices(): void

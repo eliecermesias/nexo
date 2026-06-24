@@ -32,4 +32,9 @@ class DocumentType extends Model
     {
         return $this->hasMany(Party::class, 'document_types_Id', 'Id');
     }
+
+    public function people(): HasMany
+    {
+        return $this->hasMany(Person::class, 'document_type_id', 'Id');
+    }
 }

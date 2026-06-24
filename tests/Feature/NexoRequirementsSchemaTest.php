@@ -79,5 +79,10 @@ class NexoRequirementsSchemaTest extends TestCase
         $this->assertTrue(Schema::hasColumn('services', 'pricing_type'));
         $this->assertTrue(Schema::hasColumn('invoice_items', 'retention_total'));
         $this->assertTrue(Schema::hasColumn('external_invoice_numbers', 'number'));
+        $this->assertTrue(Schema::hasColumn('internal_sequences', 'initial_value'));
+        $this->assertTrue(Schema::hasColumn('internal_sequences', 'final_value'));
+        $this->assertTrue(Schema::hasColumn('internal_sequences', 'current_value'));
+        $this->assertTrue(Schema::hasColumn('internal_sequences', 'number_length'));
+        $this->assertTrue(Schema::hasColumn('internal_sequences', 'number_format'));
     }
 }

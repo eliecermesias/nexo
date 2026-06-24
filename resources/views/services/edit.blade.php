@@ -4,27 +4,25 @@
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div class="space-y-3">
                     <div class="inline-flex items-center gap-2 rounded-full border border-cyan-300/60 bg-cyan-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-cyan-700 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-200">
-                        <flux:icon :name="$resource['icon']" class="size-4" />
-                        Nuevo registro
+                        <flux:icon name="pencil" class="size-4" />
+                        Edición de servicio
                     </div>
                     <div>
-                        <h1 class="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">Crear {{ $resource['singular'] }}</h1>
-                        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
-                            Completa la información requerida para habilitar este registro en el módulo.
-                        </p>
+                        <h1 class="text-3xl font-semibold tracking-tight text-slate-950 dark:text-white">{{ $service->name }}</h1>
+                        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">Actualiza catálogo, unidad comercial, precio base y disponibilidad.</p>
                     </div>
                 </div>
 
-                <flux:button variant="filled" icon="arrow-left" :href="route($resource['route'].'.index')">
-                    Volver
-                </flux:button>
+                <flux:button variant="filled" icon="arrow-left" :href="route('services.index')">Volver</flux:button>
             </div>
         </div>
 
+        @if (session('status'))
+            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">{{ session('status') }}</div>
+        @endif
+
         <div class="rounded-[28px] border border-slate-200 bg-white/90 p-5 shadow-[0_30px_70px_-45px_rgba(15,23,42,0.45)] dark:border-cyan-500/20 dark:bg-slate-900/75 sm:p-6">
-            @include('admin-resources._form', [
-                'action' => route($resource['route'].'.store'),
-            ])
+            @include('services._form', ['action' => route('services.update', $service), 'method' => 'PATCH', 'cancelUrl' => route('services.index')])
         </div>
     </section>
 </x-layouts::app>

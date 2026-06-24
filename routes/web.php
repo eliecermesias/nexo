@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BankController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\PartyController;
 use App\Http\Controllers\PaymentDestinationController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\PersonController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\RetentionRateController;
 use App\Http\Controllers\ServiceController;
@@ -43,6 +46,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('banks', BankController::class);
     Route::resource('bank-accounts', BankAccountController::class);
     Route::resource('payment-destinations', PaymentDestinationController::class);
+    Route::resource('parties', PartyController::class);
+    Route::resource('contacts', ContactController::class);
+    Route::resource('people', PersonController::class)
+        ->parameters(['people' => 'person']);
     Route::resource('services', ServiceController::class);
     Route::resource('plans', PlanController::class);
     Route::resource('service-rates', ServiceRateController::class);

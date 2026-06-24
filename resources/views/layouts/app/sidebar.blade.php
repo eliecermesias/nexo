@@ -52,7 +52,12 @@
                             {{ $item['name'] }}
                         </flux:navlist.item>
                     @else
-                        <flux:navlist.group expandable :expanded="false" :heading="$item['name']" class="lg:grid text-sky-100/80 [&_[data-flux-navlist-item]]:text-sky-100/80 [&_[data-flux-navlist-item]]:hover:bg-[#00C2C7]/10 [&_[data-flux-navlist-item]]:hover:text-white [&_[data-flux-navlist-item][data-current]]:bg-[#0EA5E9]/16 [&_[data-flux-navlist-item][data-current]]:text-white">
+                        @php
+                            $isExpanded = request()->routeIs($item['current'])
+                                || $item['children']->contains(fn ($child): bool => request()->routeIs($child['current']));
+                        @endphp
+
+                        <flux:navlist.group expandable :expanded="$isExpanded" :heading="$item['name']" class="lg:grid text-sky-100/80 [&_[data-flux-navlist-item]]:text-sky-100/80 [&_[data-flux-navlist-item]]:hover:bg-[#00C2C7]/10 [&_[data-flux-navlist-item]]:hover:text-white [&_[data-flux-navlist-item][data-current]]:bg-[#0EA5E9]/16 [&_[data-flux-navlist-item][data-current]]:text-white">
                             @foreach ($item['children'] as $child)
                                 <flux:navlist.item :icon="$child['icon']" :href="$resolveMenuUrl($child['url'])" :current="request()->routeIs($child['current'])" class="text-sky-100/80 hover:bg-[#00C2C7]/10 hover:text-white data-current:bg-[#0EA5E9]/16 data-current:text-white" wire:navigate>
                                     {{ $child['name'] }}
